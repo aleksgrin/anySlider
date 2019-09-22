@@ -47,21 +47,18 @@ function render(elem, arr) {
     return `<div class='dot' style='left: ${elem.x}px; top: ${elem.y}px'></div>`;
   }).join('');
 }
-function findCurveLength(arr) {
-  return arr.reduce((acum, curr, index, array) => {
+function findCurveLength(arr, ind) {
+  const sliceInd = ind || arr.length - 1;
+  const newArr = arr.slice(0, sliceInd + 1);
+  return newArr.reduce((acum, curr, index, array) => {
     return acum + (index===0 ? 0 : Math.sqrt(Math.pow((curr.x - array[index-1].x), 2) + Math.pow((curr.y - array[index-1].y), 2)));
   }, 0)
-  // const legths = [];
-  // for (let i = 0; i < arr.length - 1; i++) {
-  //   legths.push(Math.sqrt(Math.pow((arr[i+1].x - arr[i].x), 2) + Math.pow((arr[i+1].y - arr[i].y), 2)))
-  // }
-  
-  // return legths.reduce((x, y) => x + y)
 }
 
 function init(arr){
   console.log(findCurveLength(arr));
-  
+  const L = findCurveLength(arr);
+
   let index = 0;
   sliderHandle.style.left=arr[index].x - sliderHandle.offsetWidth / 2 + 'px'
   sliderHandle.style.top=arr[index].y - sliderHandle.offsetHeight / 2 + 'px'
@@ -80,9 +77,13 @@ function init(arr){
 
     function onMouseMove(moveEvt) {
       moveEvt.preventDefault();
-
-      sliderHandle.style.left=findNearest(coords.x, coords.y, arr).x - sliderHandle.offsetWidth / 2 + 'px'
-      sliderHandle.style.top=findNearest(coords.x, coords.y, arr).y - sliderHandle.offsetHeight / 2 + 'px'
+      const foundElem = findNearest(coords.x, coords.y, arr);
+      const currInd = arr.indexOf(foundElem)
+      const currL = findCurveLength(arr, currInd)
+      console.log(currL/L*100);
+      
+      sliderHandle.style.left=foundElem.x - sliderHandle.offsetWidth / 2 + 'px'
+      sliderHandle.style.top=foundElem.y - sliderHandle.offsetHeight / 2 + 'px'
     
       coords = {
         x: moveEvt.clientX,
@@ -106,6 +107,6 @@ function init(arr){
   }
 }
 
-render(test, lineArr);
+render(test, arr);
 
-init(lineArr);
+init(arr);
