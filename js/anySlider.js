@@ -31,13 +31,13 @@ export default class AnySliderClass {
     }, 0)
   }
 
-  // init(elem, arr){
   init(elem, options){
     // const L = findCurveLength(arr);
     let arr;
     const xc = 200;
     const yc = 200;
     const N = 100;
+    const maxInd = 20;
 
     if(options.type.curve === 'circle') {
       const R = options.type.r;
@@ -67,6 +67,7 @@ export default class AnySliderClass {
     }
     this.render(elem, arr);
     const sliderHandle = document.querySelector('.slider_handle');
+    let currentElemIndex = 0;
 
     sliderHandle.style.left=arr[0].x - sliderHandle.offsetWidth / 2 + 'px'
     sliderHandle.style.top=arr[0].y - sliderHandle.offsetHeight / 2 + 'px'
@@ -74,7 +75,7 @@ export default class AnySliderClass {
     sliderHandle.addEventListener('mousedown', onMouseDown)
     function onMouseDown(evt) {
       evt.preventDefault();
-  
+      
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('mouseup', onMouseUp);
   
@@ -86,12 +87,12 @@ export default class AnySliderClass {
       function onMouseMove(moveEvt) {
         moveEvt.preventDefault();
         const foundElem = findNearest(coords.x, coords.y, arr);
-        // const currInd = arr.indexOf(foundElem)
-        // const currL = findCurveLength(arr, currInd)
-        // console.log(currL/L*100);
-        
-        sliderHandle.style.left=foundElem.x - sliderHandle.offsetWidth / 2 + 'px'
-        sliderHandle.style.top=foundElem.y - sliderHandle.offsetHeight / 2 + 'px'
+        const foundElemIndex = arr.indexOf(foundElem);
+        if(foundElemIndex - currentElemIndex < maxInd && foundElemIndex - currentElemIndex > -maxInd) {
+          currentElemIndex = foundElemIndex;
+          sliderHandle.style.left=foundElem.x - sliderHandle.offsetWidth / 2 + 'px'
+          sliderHandle.style.top=foundElem.y - sliderHandle.offsetHeight / 2 + 'px'
+        }
       
         coords = {
           x: moveEvt.clientX,
@@ -106,6 +107,8 @@ export default class AnySliderClass {
           return arr[minInd];
         }
 
+        // const currInd = arr.indexOf(foundElem)
+        // const currL = findCurveLength(arr, currInd)
       }
   
       function onMouseUp(upEvt) {
