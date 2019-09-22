@@ -56,23 +56,22 @@ function init(){
 
     function onMouseMove(moveEvt) {
       moveEvt.preventDefault();
-      var fi1 = Math.atan((coords.y-yc) / (coords.x-xc));
-      var fi2 = Math.atan((moveEvt.clientY - yc) / (moveEvt.clientX - xc));
-      if(fi2 - fi1 > 0) {
-        index = ++index >= arr.length ? 0: ++index;
-      }
-      if(fi2 - fi1 < 0) {
-        index = --index <= 0 ? arr.length-1: --index;
-      }
-      
-      sliderHandle.style.left=arr[index].x - sliderHandle.offsetWidth / 2 + 'px'
-      sliderHandle.style.top=arr[index].y - sliderHandle.offsetHeight / 2 + 'px'
+
+      sliderHandle.style.left=findNearest(coords.x, coords.y, arr).x - sliderHandle.offsetWidth / 2 + 'px'
+      sliderHandle.style.top=findNearest(coords.x, coords.y, arr).y - sliderHandle.offsetHeight / 2 + 'px'
     
       coords = {
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
 
+      function findNearest(x , y, arr) {
+        const dists = arr.map((elem) => {
+          return Math.sqrt(Math.pow((elem.x - x), 2) + Math.pow((elem.y - y), 2));
+        });
+        const minInd = dists.indexOf(Math.min(...dists));
+        return arr[minInd];
+      }
     }
 
     function onMouseUp(upEvt) {
