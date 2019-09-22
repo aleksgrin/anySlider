@@ -47,8 +47,21 @@ function render(elem, arr) {
     return `<div class='dot' style='left: ${elem.x}px; top: ${elem.y}px'></div>`;
   }).join('');
 }
+function findCurveLength(arr) {
+  return arr.reduce((acum, curr, index, array) => {
+    return acum + (index===0 ? 0 : Math.sqrt(Math.pow((curr.x - array[index-1].x), 2) + Math.pow((curr.y - array[index-1].y), 2)));
+  }, 0)
+  // const legths = [];
+  // for (let i = 0; i < arr.length - 1; i++) {
+  //   legths.push(Math.sqrt(Math.pow((arr[i+1].x - arr[i].x), 2) + Math.pow((arr[i+1].y - arr[i].y), 2)))
+  // }
+  
+  // return legths.reduce((x, y) => x + y)
+}
 
 function init(arr){
+  console.log(findCurveLength(arr));
+  
   let index = 0;
   sliderHandle.style.left=arr[index].x - sliderHandle.offsetWidth / 2 + 'px'
   sliderHandle.style.top=arr[index].y - sliderHandle.offsetHeight / 2 + 'px'
@@ -76,7 +89,7 @@ function init(arr){
         y: moveEvt.clientY
       };
 
-      function findNearest(x , y, arr) {
+      function findNearest(x, y, arr) {
         const dists = arr.map((elem) => {
           return Math.sqrt(Math.pow((elem.x - x), 2) + Math.pow((elem.y - y), 2));
         });
