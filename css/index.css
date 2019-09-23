@@ -1,11 +1,17 @@
+bode
 .elem {
   position: absolute;
   left: 50px;
-  top: 50px;
+  top: 50px; 
   width: 200px;
   height: 200px;
   background-color: blue;
 }
+/* .slider {
+  position: absolute;
+  left: 100px;
+  top: 100px;
+} */
 .drag {
   position: absolute;
   left: 0;
