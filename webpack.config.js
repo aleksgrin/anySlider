@@ -2,27 +2,20 @@
 
 var path = require("path");
 const webpack = require("webpack");
+const nodeExternals = require("webpack-node-externals");
 
 module.exports = {
-  entry: {
-    main: ["webpack-dev-server/client", "./js/app"]
-  },
+  target: "node",
+  externals: [nodeExternals()],
+  entry: "./src/js/app",
   output: {
-    filename: "build.js",
-    library: "app"
+    path: path.join(__dirname, "build"),
+    filename: "build.js"
   },
-  plugins: [new webpack.HotModuleReplacementPlugin()],
-  devServer: {
-    // contentBase: path.join(__dirname, "dist"),
-    host: "localhost",
-    compress: true,
-    port: 9000,
-    hot: true
-  },
-  watch: true,
-  watchOptions: {
-    aggregateTimeout: 100
-  },
+  // watch: true,
+  // watchOptions: {
+  //   aggregateTimeout: 100
+  // },
   devtool: "source-map",
   // resolve: {
   //   modulesDirectories: ['node_modules'],
@@ -32,7 +25,12 @@ module.exports = {
     rules: [
       {
         test: "/.js$/",
-        loader: "babel?optional[]=runtime"
+        use: [
+          {
+            loader: "babel-loader",
+            options: { presets: ["env"] }
+          }
+        ]
       }
     ]
   }
