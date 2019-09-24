@@ -23,6 +23,7 @@ const options = {
     fi2: 270
   }
 };
+console.log("hi!!");
 
 anySlider.init(slider, options);
 // anySlider.init(slider, arr);

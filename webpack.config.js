@@ -10,7 +10,8 @@ module.exports = {
   entry: "./src/js/app",
   output: {
     path: path.join(__dirname, "build"),
-    filename: "build.js"
+    filename: "build.js",
+    publicPath: "/build/"
   },
   // watch: true,
   // watchOptions: {
