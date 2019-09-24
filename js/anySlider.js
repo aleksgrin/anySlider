@@ -39,56 +39,76 @@ export default class AnySliderClass {
     }, 0);
   }
 
-  init(elem, options) {
-    let arr;
-    const xc = 200;
-    const yc = 200;
-    const N = 100;
-    const maxInd = 20;
+  findNearest(x, y, arr) {
+    const dists = arr.map(elem => {
+      return Math.sqrt(Math.pow(elem.x - x, 2) + Math.pow(elem.y - y, 2));
+    });
+    const minInd = dists.indexOf(Math.min(...dists));
+    return arr[minInd];
+  }
 
-    if (options.type.curve === "circle") {
-      const R = options.type.r;
-      arr = this.createArray(0, 360, N)
-        .map(elem => (elem * Math.PI) / 180)
-        .map((elem, i) => {
-          let xAbs = xc + R * Math.cos(elem);
-          let yAbs = yc + R * Math.sin(elem);
+  checkInput(param) {
+    if(param instanceof Array) {
+      return param;
+    }
+    else if (param instanceof Object) {
+      let arr;
+      const xc = 200;
+      const yc = 200;
+      const N = 100;
+      if (param.type.curve === "circle") {
+        const R = param.type.r;
+        arr = this.createArray(0, 360, N)
+          .map(elem => (elem * Math.PI) / 180)
+          .map((elem, i) => {
+            let xAbs = xc + R * Math.cos(elem);
+            let yAbs = yc + R * Math.sin(elem);
+            return { x: xAbs, y: yAbs };
+          });
+      }
+      if (param.type.curve === "spiral") {
+        const { fi1, fi2, r1, r2 } = param.type;
+        arr = this.createArray(fi1, fi2, N)
+          .map(elem => (elem * Math.PI) / 180)
+          .map((elem, i) => {
+            let xAbs = xc + this.createArray(r1, r2, N)[i] * Math.cos(elem);
+            let yAbs = yc + this.createArray(r1, r2, N)[i] * Math.sin(elem);
+            return { x: xAbs, y: yAbs };
+          });
+      }
+      if (param.type.curve === "arc") {
+        const { r, fi1, fi2 } = param.type;
+        arr = this.createArray(fi1, fi2, N)
+          .map(elem => (elem * Math.PI) / 180)
+          .map(elem => {
+            let xAbs = xc + r * Math.cos(elem);
+            let yAbs = yc + r * Math.sin(elem);
+            return { x: xAbs, y: yAbs };
+          });
+      }
+      if (param.type.curve === "line") {
+        const { x1, x2, y1, y2 } = param.type;
+        const xArr = this.createArray(x1, x2, N);
+        const yArr = this.createArray(y1, y2, N);
+        arr = xArr.map((elem, index) => {
+          let xAbs = elem;
+          let yAbs = yArr[index];
           return { x: xAbs, y: yAbs };
         });
+      }
+      return arr;
     }
-    if (options.type.curve === "spiral") {
-      const { fi1, fi2, r1, r2 } = options.type;
-      arr = this.createArray(fi1, fi2, N)
-        .map(elem => (elem * Math.PI) / 180)
-        .map((elem, i) => {
-          let xAbs = xc + this.createArray(r1, r2, N)[i] * Math.cos(elem);
-          let yAbs = yc + this.createArray(r1, r2, N)[i] * Math.sin(elem);
-          return { x: xAbs, y: yAbs };
-        });
-    }
-    if (options.type.curve === "arc") {
-      const { r, fi1, fi2 } = options.type;
-      arr = this.createArray(fi1, fi2, N)
-        .map(elem => (elem * Math.PI) / 180)
-        .map(elem => {
-          let xAbs = xc + r * Math.cos(elem);
-          let yAbs = yc + r * Math.sin(elem);
-          return { x: xAbs, y: yAbs };
-        });
-    }
-    if (options.type.curve === "line") {
-      const { x1, x2, y1, y2 } = options.type;
-      const xArr = this.createArray(x1, x2, N);
-      const yArr = this.createArray(y1, y2, N);
-      arr = xArr.map((elem, index) => {
-        let xAbs = elem;
-        let yAbs = yArr[index];
-        return { x: xAbs, y: yAbs };
-      });
-    }
+  }
+
+  init(elem, param) {
+    const arr = this.checkInput(param);
+    const maxInd = 20;
     const L = this.findCurveLength(arr);
     this.render(elem, arr);
+    const sliderElem = document.querySelector(".slider");
     const sliderHandle = document.querySelector(".slider_handle");
+    const sliderLeft = sliderElem.offsetLeft;
+    const sliderTop = sliderElem.offsetTop;
     let currentElemIndex = 0;
 
     sliderHandle.style.left = arr[0].x - sliderHandle.offsetWidth / 2 + "px";
@@ -98,13 +118,13 @@ export default class AnySliderClass {
       evt.preventDefault();
 
       let coords = {
-        x: evt.clientX,
-        y: evt.clientY
+        x: evt.clientX - sliderLeft,
+        y: evt.clientY - sliderTop
       };
 
       let onMouseMove = moveEvt => {
         moveEvt.preventDefault();
-        const foundElem = findNearest(coords.x, coords.y, arr);
+        const foundElem = this.findNearest(coords.x, coords.y, arr);
         const foundElemIndex = arr.indexOf(foundElem);
         if (
           foundElemIndex - currentElemIndex < maxInd &&
@@ -118,17 +138,9 @@ export default class AnySliderClass {
         }
 
         coords = {
-          x: moveEvt.clientX,
-          y: moveEvt.clientY
+          x: moveEvt.clientX - sliderLeft,
+          y: moveEvt.clientY - sliderTop
         };
-
-        function findNearest(x, y, arr) {
-          const dists = arr.map(elem => {
-            return Math.sqrt(Math.pow(elem.x - x, 2) + Math.pow(elem.y - y, 2));
-          });
-          const minInd = dists.indexOf(Math.min(...dists));
-          return arr[minInd];
-        }
 
         const currInd = arr.indexOf(foundElem);
         const currL = this.findCurveLength(arr, currInd);

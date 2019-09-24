@@ -1,4 +1,6 @@
-bode
+body{
+  padding-top: 50px;
+}
 .elem {
   position: absolute;
   left: 50px;
@@ -7,11 +9,11 @@ bode
   height: 200px;
   background-color: blue;
 }
-/* .slider {
+.slider {
   position: absolute;
   left: 100px;
   top: 100px;
-} */
+}
 .drag {
   position: absolute;
   left: 0;

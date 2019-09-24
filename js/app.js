@@ -3,12 +3,18 @@ import AnySlider from "./anySlider";
 const anySlider = new AnySlider();
 const slider = document.querySelector(".slider");
 
-// const options = {
-//   type: {
-//     curve: "circle",
-//     r: 200
-//   }
-// };
+const A = 60;
+const fi1=0;
+const fi2=200*Math.PI;
+const w = 1/50;
+const N = 100;
+
+// const arr = anySlider.createArray(fi1, fi2, N).map(elem => {
+//   let xAbs = elem;
+//   let yAbs = A * Math.sin(w*elem);
+//   return { x: xAbs, y: yAbs };
+// });
+
 const options = {
   type: {
     curve: "arc",
@@ -17,14 +23,6 @@ const options = {
     fi2: 270
   }
 };
-// const options = {
-//   type: {
-//     curve: "spiral",
-//     fi1: 0,
-//     fi2: 560,
-//     r1: 0,
-//     r2: 200
-//   }
-// };
 
 anySlider.init(slider, options);
+// anySlider.init(slider, arr);
