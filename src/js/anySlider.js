@@ -101,6 +101,8 @@ export default class AnySliderClass {
   }
 
   init(elem, param) {
+    const value = document.querySelector(".value");
+
     const arr = this.checkInput(param);
     const maxInd = 20;
     const L = this.findCurveLength(arr);
@@ -110,6 +112,7 @@ export default class AnySliderClass {
     const sliderLeft = sliderElem.offsetLeft;
     const sliderTop = sliderElem.offsetTop;
     let currentElemIndex = 0;
+
 
     sliderHandle.style.left = arr[0].x - sliderHandle.offsetWidth / 2 + "px";
     sliderHandle.style.top = arr[0].y - sliderHandle.offsetHeight / 2 + "px";

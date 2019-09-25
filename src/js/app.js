@@ -21,6 +21,10 @@ const options = {
     r: 250,
     fi1: 90,
     fi2: 270
+  },
+  values: {
+    'min': 0,
+    'max': 300
   }
 };
 console.log("hi!!");

@@ -1,15 +1,16 @@
 "use strict";
 
 var path = require("path");
-const webpack = require("webpack");
-const nodeExternals = require("webpack-node-externals");
+// const webpack = require("webpack");
+// const nodeExternals = require("webpack-node-externals");
 
 module.exports = {
   target: "node",
-  externals: [nodeExternals()],
+  // externals: [nodeExternals()],
   entry: "./src/js/app",
   output: {
     path: path.join(__dirname, "build"),
+    // path: "./build/build.js",
     filename: "build.js",
     publicPath: "/build/"
   },
