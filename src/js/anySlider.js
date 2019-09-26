@@ -24,7 +24,7 @@ export default class AnySliderClass {
   }
 
   findCurveLength(arr, ind) {
-    const sliceInd = ind || arr.length - 1;
+    const sliceInd = ind === undefined ? arr.length - 1 : ind;
     const newArr = arr.slice(0, sliceInd + 1);
     return newArr.reduce((acum, curr, index, array) => {
       return (
@@ -119,7 +119,6 @@ export default class AnySliderClass {
     const sliderTop = sliderElem.offsetTop;
     let currentElemIndex = 0;
 
-
     sliderHandle.style.left = arr[0].x - sliderHandle.offsetWidth / 2 + "px";
     sliderHandle.style.top = arr[0].y - sliderHandle.offsetHeight / 2 + "px";
 
@@ -144,6 +143,9 @@ export default class AnySliderClass {
             foundElem.x - sliderHandle.offsetWidth / 2 + "px";
           sliderHandle.style.top =
             foundElem.y - sliderHandle.offsetHeight / 2 + "px";
+
+          const currInd = arr.indexOf(foundElem);
+          currL = this.findCurveLength(arr, currInd);
         }
 
         coords = {
@@ -151,8 +153,7 @@ export default class AnySliderClass {
           y: moveEvt.clientY - sliderTop
         };
 
-        const currInd = arr.indexOf(foundElem);
-        currL = this.findCurveLength(arr, currInd);
+        // currL = this.findCurveLength(arr, currInd);
         isValuesReseived &&
           (input.innerHTML = this.calculateValue(
             startValue,
@@ -160,9 +161,9 @@ export default class AnySliderClass {
             currL,
             L
           ));
-        console.log(currL);
-        console.log(L);
-        console.log((currL / L) * 100);
+        // console.log(currL);
+        // console.log(L);
+        // console.log((currL / L) * 100);
       };
 
       function onMouseUp(upEvt) {

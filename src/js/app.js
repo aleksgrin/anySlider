@@ -25,7 +25,7 @@ const arr = anySlider.createArray(fi1, fi2, N).map(elem => {
 // };
 
 const options = {
-  arr: arr,
+  // arr: arr,
   type: {
     curve: "arc",
     r: 250,
