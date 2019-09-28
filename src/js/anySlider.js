@@ -119,6 +119,7 @@ export default class AnySliderClass {
       console.warn('Your value is out of your start or end values or you forgot to provied one');
       return
     };
+    this.sliderValue = value;
     const curveLengths = this.arr.map((elem, ind, arr) => {
       return this.findCurveLength(arr, ind);
     });
