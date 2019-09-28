@@ -55,36 +55,33 @@ export default class AnySliderClass {
   }
 
   checkInput(param) {
-    let arr;
-    const xc = 200;
-    const yc = 200;
-    const N = 100;
+    const N = param.type.N || 100;
     if (param.arr) {
       return param.arr;
     }
     if (param.type.curve === "circle") {
       const R = param.type.r;
-      arr = this.createArray(0, 360, N)
+      return this.createArray(0, 360, N)
         .map(elem => (elem * Math.PI) / 180)
-        .map((elem, i) => {
-          let xAbs = xc + R * Math.cos(elem);
-          let yAbs = yc + R * Math.sin(elem);
+        .map((elem) => {
+          let xAbs = R + R * Math.cos(elem);
+          let yAbs = R + R * Math.sin(elem);
           return { x: xAbs, y: yAbs };
         });
     }
     if (param.type.curve === "spiral") {
       const { fi1, fi2, r1, r2 } = param.type;
-      arr = this.createArray(fi1, fi2, N)
+      return this.createArray(fi1, fi2, N)
         .map(elem => (elem * Math.PI) / 180)
         .map((elem, i) => {
-          let xAbs = xc + this.createArray(r1, r2, N)[i] * Math.cos(elem);
-          let yAbs = yc + this.createArray(r1, r2, N)[i] * Math.sin(elem);
+          let xAbs = r2 + this.createArray(r1, r2, N)[i] * Math.cos(elem);
+          let yAbs = r2 + this.createArray(r1, r2, N)[i] * Math.sin(elem);
           return { x: xAbs, y: yAbs };
         });
     }
     if (param.type.curve === "arc") {
       const { r, fi1, fi2 } = param.type;
-      arr = this.createArray(fi1, fi2, N)
+      return this.createArray(fi1, fi2, N)
         .map(elem => (elem * Math.PI) / 180)
         .map(elem => {
           let xAbs = xc + r * Math.cos(elem);
@@ -96,13 +93,12 @@ export default class AnySliderClass {
       const { x1, x2, y1, y2 } = param.type;
       const xArr = this.createArray(x1, x2, N);
       const yArr = this.createArray(y1, y2, N);
-      arr = xArr.map((elem, index) => {
+      return xArr.map((elem, index) => {
         let xAbs = elem;
         let yAbs = yArr[index];
         return { x: xAbs, y: yAbs };
       });
     }
-    return arr;
   }
 
   calculateValue(start, end, currL, L) {
@@ -119,7 +115,10 @@ export default class AnySliderClass {
     return foundElemIndex;
   }
   set(value) {
-    if (value > this.endValue || value < this.startValue) return;
+    if (value > this.endValue || value < this.startValue) {
+      console.warn('Your value is out of your start or end values or you forgot to provied one');
+      return
+    };
     const curveLengths = this.arr.map((elem, ind, arr) => {
       return this.findCurveLength(arr, ind);
     });
@@ -164,10 +163,7 @@ export default class AnySliderClass {
         moveEvt.preventDefault();
         const foundElem = this.findNearest(coords.x, coords.y, arr);
         const foundElemIndex = arr.indexOf(foundElem);
-        if (
-          foundElemIndex - currentElemIndex < maxInd &&
-          foundElemIndex - currentElemIndex > -maxInd
-        ) {
+        if (Math.abs(foundElemIndex - currentElemIndex) < maxInd) {
           currentElemIndex = foundElemIndex;
           this.sliderHandle.style.left =
             foundElem.x - this.sliderHandle.offsetWidth / 2 + "px";

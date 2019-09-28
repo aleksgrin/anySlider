@@ -21,6 +21,10 @@ const options = {
     fi2: 720,
     r1: 0,
     r2: 200
+  },
+  values: {
+    from: 0,
+    to: 300
   }
 };
 
