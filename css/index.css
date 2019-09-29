@@ -1,6 +1,9 @@
 body{
   padding-top: 50px;
 }
+canvas {
+  border: 1px solid black;
+}
 .elem {
   position: absolute;
   left: 50px;
@@ -22,22 +25,26 @@ body{
   left: 100px;
   top: 100px;
 }
-.drag {
+.slider_handle::before {
+  content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 80px;
-  height: 80px;
-  background-color: red;
+  width: 4px;
+  height: 4px;
+  background-color: blue;
+  border-radius: 50%;
 }
 .slider_handle {
+  box-sizing: border-box;
   position: absolute;
   left: 50px;
   top: 50px;
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-color: red;
+  border: 2px solid red;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .circle {
   position: absolute;
@@ -53,8 +60,9 @@ body{
   position: absolute;
   left: 0;
   top: 0;
-  width: 4px;
-  height: 4px;
-  background-color: black;
+  width: 2px;
+  height: 2px;
+  /* background-color: black; */
+  border: 1px solid pink;
   border-radius: 50%; 
 }

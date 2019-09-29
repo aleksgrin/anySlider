@@ -1,3 +1,4 @@
+import {init} from './init'
 export default class AnySliderClass {
   constructor() {
     this.sliderValue = null;
@@ -14,14 +15,21 @@ export default class AnySliderClass {
   render(elem, arr) {
     elem.innerHTML = `
       <div class="slider_handle"></div>
-      <div class="test">
-        ${arr
-          .map(elem => {
-            return `<div class='dot' style='left: ${elem.x}px; top: ${elem.y}px'></div>`;
-          })
-          .join("")}
-      </div>
+      <canvas id='canvas'></canvas>
     `;
+    const canvas = document.querySelector('#canvas');
+    const dotRadius = 2;
+    canvas.width = this.canvasWidth;
+    canvas.height = this.canvasHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000000';
+    arr.forEach((elem) => {
+      ctx.moveTo(elem.x, elem.y);
+      ctx.arc(elem.x + dotRadius / 2, elem.y + dotRadius / 2, dotRadius, 0, 2*Math.PI);
+      // ctx.arc(elem.x, elem.y, dotRadius, 0, 2*Math.PI);
+    });
+    ctx.fill();
+
   }
 
   createArray(begin, end, N) {
@@ -64,6 +72,8 @@ export default class AnySliderClass {
     }
     if (param.type.curve === "circle") {
       const R = param.type.r;
+      this.canvasWidth = 2*R;
+      this.canvasHeight = 2*R;
       return this.createArray(0, 360, N)
         .map(elem => (elem * Math.PI) / 180)
         .map((elem) => {
@@ -74,6 +84,8 @@ export default class AnySliderClass {
     }
     if (param.type.curve === "spiral") {
       const { fi1, fi2, r1, r2 } = param.type;
+      this.canvasWidth = 2*r2;
+      this.canvasHeight = 2*r2;
       return this.createArray(fi1, fi2, N)
         .map(elem => (elem * Math.PI) / 180)
         .map((elem, i) => {
@@ -84,11 +96,13 @@ export default class AnySliderClass {
     }
     if (param.type.curve === "arc") {
       const { r, fi1, fi2 } = param.type;
+      this.canvasWidth = 2*r;
+      this.canvasHeight = 2*r;
       return this.createArray(fi1, fi2, N)
         .map(elem => (elem * Math.PI) / 180)
         .map(elem => {
-          let xAbs = xc + r * Math.cos(elem);
-          let yAbs = yc + r * Math.sin(elem);
+          let xAbs = r + r * Math.cos(elem);
+          let yAbs = r + r * Math.sin(elem);
           return { x: xAbs, y: yAbs };
         });
     }
@@ -150,12 +164,11 @@ export default class AnySliderClass {
     this.startValue = isValuesReseived ? param.values.from : null;
     this.endValue = isValuesReseived ? param.values.to : null;
     this.arr = this.checkInput(param);
-    const arr = this.arr;
-    
+
     const maxInd = 20;
     let currL = 0;
-    this.L = this.findCurveLength(arr);
-    this.render(elem, arr);
+    this.L = this.findCurveLength(this.arr);
+    this.render(elem, this.arr);
     const sliderElem = document.querySelector(".slider");
     this.sliderHandle = document.querySelector(".slider_handle");
     const sliderLeft = sliderElem.offsetLeft;
@@ -163,8 +176,8 @@ export default class AnySliderClass {
     let currentElemIndex = 0;
 
 
-    this.sliderHandle.style.left = arr[0].x - this.sliderHandle.offsetWidth / 2 + "px";
-    this.sliderHandle.style.top = arr[0].y - this.sliderHandle.offsetHeight / 2 + "px";
+    this.sliderHandle.style.left = this.arr[0].x - this.sliderHandle.offsetWidth / 2 + "px";
+    this.sliderHandle.style.top = this.arr[0].y - this.sliderHandle.offsetHeight / 2 + "px";
 
     let onMouseDown = evt => {
       evt.preventDefault();
@@ -180,8 +193,8 @@ export default class AnySliderClass {
 
         if(this.moveEvent) document.dispatchEvent(this.moveEvent);
 
-        const foundElem = this.findNearest(coords.x, coords.y, arr);
-        const foundElemIndex = arr.indexOf(foundElem);
+        const foundElem = this.findNearest(coords.x, coords.y, this.arr);
+        const foundElemIndex = this.arr.indexOf(foundElem);
         if (Math.abs(foundElemIndex - currentElemIndex) < maxInd) {
           currentElemIndex = foundElemIndex;
           this.sliderHandle.style.left =
@@ -195,8 +208,8 @@ export default class AnySliderClass {
           y: moveEvt.clientY - sliderTop
         };
 
-        const currInd = arr.indexOf(foundElem);
-        currL = this.findCurveLength(arr, currInd);
+        const currInd = this.arr.indexOf(foundElem);
+        currL = this.findCurveLength(this.arr, currInd);
         if (isValuesReseived) {
           this.sliderValue = this.calculateValue(this.startValue, this.endValue, currL, this.L)
         }
