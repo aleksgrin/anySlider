@@ -6,6 +6,9 @@ export default class AnySliderClass {
     this.startValue = null;
     this.endValue = null;
     this.L = null;
+    this.startEvent = null;
+    this.moveEvent = null;
+    this.endEvent = null;
   }
 
   render(elem, arr) {
@@ -129,6 +132,19 @@ export default class AnySliderClass {
     this.sliderHandle.style.top = foundElem.y - this.sliderHandle.offsetHeight / 2 + "px";
   }
 
+  listen(type, callback) {
+    if(type === 'start') {
+      this.startEvent = new Event('start');
+      this.sliderHandle.addEventListener('start', callback, false);
+    } else if(type === 'move') {
+      this.moveEvent = new Event('move');
+      document.addEventListener('move', callback, false);
+    } else if(type === 'end') {
+      this.endEvent = new Event('end');
+      document.addEventListener('end', callback, false);
+    }
+  }
+
   init(elem, param) {
     const isValuesReseived = param.values ? true : false;
     this.startValue = isValuesReseived ? param.values.from : null;
@@ -154,6 +170,7 @@ export default class AnySliderClass {
 
     let onMouseDown = evt => {
       evt.preventDefault();
+      if(this.startEvent) this.sliderHandle.dispatchEvent(this.startEvent);
 
       let coords = {
         x: evt.clientX - sliderLeft,
@@ -162,6 +179,9 @@ export default class AnySliderClass {
 
       let onMouseMove = moveEvt => {
         moveEvt.preventDefault();
+
+        if(this.moveEvent) document.dispatchEvent(this.moveEvent);
+
         const foundElem = this.findNearest(coords.x, coords.y, arr);
         const foundElemIndex = arr.indexOf(foundElem);
         if (Math.abs(foundElemIndex - currentElemIndex) < maxInd) {
@@ -186,10 +206,12 @@ export default class AnySliderClass {
         isValuesReseived && (input.innerHTML = this.sliderValue);
       };
 
-      function onMouseUp(upEvt) {
+      let onMouseUp = (upEvt) => {
         upEvt.preventDefault();
+        if(this.endEvent) document.dispatchEvent(this.endEvent);
+
         document.removeEventListener("mousemove", onMouseMove);
-        document.addEventListener("mouseup", onMouseUp);
+        document.removeEventListener("mouseup", onMouseUp);
       }
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);

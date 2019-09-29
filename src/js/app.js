@@ -43,5 +43,11 @@ const options = {
 // };
 
 anySlider.init(slider, options);
+anySlider.listen('start', () => {
+  console.log('You started!')
+});
+anySlider.listen('move', () => console.log('You are moving!'));
+anySlider.listen('end', () => console.log('END!!!'));
 // anySlider.set(200);
 // anySlider.init(slider, arr);
+
