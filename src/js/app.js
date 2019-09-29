@@ -2,7 +2,7 @@ import AnySlider from "./anySlider";
 
 window.anySlider = new AnySlider();
 const slider = document.querySelector(".slider");
-
+const input = document.querySelector('.input');
 const A = 60;
 const fi1 = 0;
 const fi2 = 200 * Math.PI;
@@ -46,7 +46,11 @@ anySlider.init(slider, options);
 anySlider.listen('start', () => {
   console.log('You started!')
 });
-anySlider.listen('move', () => console.log('You are moving!'));
+anySlider.listen('move', () => {
+  const value = anySlider.get();
+  input.innerHTML = value;
+  console.log('You are moving!')
+});
 anySlider.listen('end', () => console.log('END!!!'));
 // anySlider.set(200);
 // anySlider.init(slider, arr);

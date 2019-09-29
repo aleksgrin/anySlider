@@ -158,8 +158,6 @@ export default class AnySliderClass {
     this.render(elem, arr);
     const sliderElem = document.querySelector(".slider");
     this.sliderHandle = document.querySelector(".slider_handle");
-    const input = document.querySelector(".input");
-
     const sliderLeft = sliderElem.offsetLeft;
     const sliderTop = sliderElem.offsetTop;
     let currentElemIndex = 0;
@@ -202,8 +200,6 @@ export default class AnySliderClass {
         if (isValuesReseived) {
           this.sliderValue = this.calculateValue(this.startValue, this.endValue, currL, this.L)
         }
-
-        isValuesReseived && (input.innerHTML = this.sliderValue);
       };
 
       let onMouseUp = (upEvt) => {
