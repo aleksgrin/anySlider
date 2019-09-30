@@ -1,4 +1,3 @@
-import { init } from "./init";
 export default class AnySliderClass {
   constructor() {
     this.sliderValue = null;
@@ -24,7 +23,7 @@ export default class AnySliderClass {
     const ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";
     arr.forEach(elem => {
-      ctx.moveTo(elem.x, elem.y);
+      ctx.moveTo(elem.x + dotRadius / 2, elem.y + dotRadius / 2);
       ctx.arc(
         elem.x + dotRadius / 2,
         elem.y + dotRadius / 2,
@@ -32,7 +31,6 @@ export default class AnySliderClass {
         0,
         2 * Math.PI
       );
-      // ctx.arc(elem.x, elem.y, dotRadius, 0, 2*Math.PI);
     });
     ctx.fill();
   }
@@ -77,8 +75,6 @@ export default class AnySliderClass {
     }
     if (param.type.curve === "circle") {
       const R = param.type.r;
-      this.canvasWidth = 2 * R;
-      this.canvasHeight = 2 * R;
       return this.createArray(0, 360, N)
         .map(elem => (elem * Math.PI) / 180)
         .map(elem => {
@@ -89,8 +85,6 @@ export default class AnySliderClass {
     }
     if (param.type.curve === "spiral") {
       const { fi1, fi2, r1, r2 } = param.type;
-      this.canvasWidth = 2 * r2;
-      this.canvasHeight = 2 * r2;
       return this.createArray(fi1, fi2, N)
         .map(elem => (elem * Math.PI) / 180)
         .map((elem, i) => {
@@ -101,8 +95,6 @@ export default class AnySliderClass {
     }
     if (param.type.curve === "arc") {
       const { r, fi1, fi2 } = param.type;
-      this.canvasWidth = 2 * r;
-      this.canvasHeight = 2 * r;
       return this.createArray(fi1, fi2, N)
         .map(elem => (elem * Math.PI) / 180)
         .map(elem => {
@@ -175,6 +167,8 @@ export default class AnySliderClass {
     this.endValue = isValuesReseived ? param.values.to : null;
     this.arr = this.checkInput(param);
 
+    this.canvasWidth = Math.max(...this.arr.map(elem => elem.x)) + 10;
+    this.canvasHeight = Math.max(...this.arr.map(elem => elem.y)) + 10;
     const maxInd = 20;
     let currL = 0;
     this.L = this.findCurveLength(this.arr);

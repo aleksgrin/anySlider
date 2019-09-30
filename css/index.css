@@ -1,9 +1,6 @@
 body{
   padding-top: 50px;
 }
-canvas {
-  border: 1px solid black;
-}
 .elem {
   position: absolute;
   left: 50px;
@@ -55,14 +52,4 @@ canvas {
   border-radius: 50%;
   background: transparent;
   border: 1px dashed black;
-}
-.dot {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 2px;
-  height: 2px;
-  /* background-color: black; */
-  border: 1px solid pink;
-  border-radius: 50%; 
 }
