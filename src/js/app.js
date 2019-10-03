@@ -15,7 +15,7 @@ const arr = anySlider.createArray(fi1, fi2, N).map(elem => {
   return { x: xAbs, y: yAbs };
 });
 const options = {
-  arr: arr,
+  // arr: arr,
   type: {
     curve: "spiral",
     fi1: 0,
@@ -27,7 +27,10 @@ const options = {
     from: 0,
     to: 300
   },
-  clickable: true
+  clickable: true,
+  transition: {
+    t: 2
+  }
 };
 
 // const options = {

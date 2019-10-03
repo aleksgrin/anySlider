@@ -25,8 +25,8 @@ export default class AnySliderClass {
     arr.forEach(elem => {
       ctx.moveTo(elem.x + dotRadius / 2, elem.y + dotRadius / 2);
       ctx.arc(
-        elem.x + dotRadius / 2,
-        elem.y + dotRadius / 2,
+        elem.x,
+        elem.y,
         dotRadius,
         0,
         2 * Math.PI
@@ -165,19 +165,17 @@ export default class AnySliderClass {
   }
 
   to(elem) {
-    console.log("targ", this.targetElemIndex);
-    console.log("curr", this.currentElemIndex);
-
     const currInd = this.currentElemIndex;
     const targInd = this.targetElemIndex;
-    const t = 3;
     const N = Math.abs(targInd - currInd);
-    const v = N / t;
-    const tArr = this.createArray(0, t, N);
-    const vArr = this.createArray(v, v, N);
-    const sArr = vArr.map((elem, i) => {
-      return Math.round(elem * tArr[i]);
-    });
+    const deltaT = this.transitionTime * 1000 / N;
+    // const t = 3;
+    // const v = N / t;
+    // const tArr = this.createArray(0, t, N);
+    // const vArr = this.createArray(v, v, N);
+    // const sArr = vArr.map((elem, i) => {
+    //   return Math.round(elem * tArr[i]);
+    // });
 
     let i = currInd;
     let moveTimeout = () => {
@@ -187,13 +185,12 @@ export default class AnySliderClass {
         this.sliderHandle.style.top =
           this.arr[i].y - this.sliderHandle.offsetHeight / 2 + "px";
         i = targInd < currInd ? --i : ++i;
-
         if (i < targInd + 1 && targInd > currInd) {
           moveTimeout();
         } else if (i > targInd && targInd < currInd) {
           moveTimeout();
         }
-      }, 10);
+      }, deltaT);
     };
     moveTimeout();
   }
@@ -201,6 +198,7 @@ export default class AnySliderClass {
   init(elem, param) {
     const isValuesReseived = param.values ? true : false;
     const isClickable = param.clickable;
+    this.transitionTime = param.transition.time ? param.transition.time: 1; 
     this.startValue = isValuesReseived ? param.values.from : null;
     this.endValue = isValuesReseived ? param.values.to : null;
     this.arr = this.checkInput(param);
@@ -239,16 +237,9 @@ export default class AnySliderClass {
         const foundNearest = this.findNearest(coords.x, coords.y, this.arr);
         const foundElemIndex = this.arr.indexOf(foundNearest);
         this.targetElemIndex = foundElemIndex;
-        // this.currentElemIndex = foundElemIndex;
         this.to(foundNearest);
 
         this.currentElemIndex = foundElemIndex;
-        // this.targetElemIndex = foundElemIndex;
-        // this.to(foundNearest);
-        // this.sliderHandle.style.left =
-        //   foundNearest.x - this.sliderHandle.offsetWidth / 2 + "px";
-        // this.sliderHandle.style.top =
-        //   foundNearest.y - this.sliderHandle.offsetHeight / 2 + "px";
         currL = this.findCurveLength(this.arr, foundElemIndex);
         if (isValuesReseived) {
           this.sliderValue = this.calculateValue(
@@ -264,9 +255,6 @@ export default class AnySliderClass {
     let onMouseDown = evt => {
       evt.preventDefault();
       if (this.startEvent) this.sliderHandle.dispatchEvent(this.startEvent);
-
-      console.log(getCoordsStorage(evt));
-
       let coords = {
         x: getCoordsStorage(evt).clientX - sliderLeft,
         y: getCoordsStorage(evt).clientY - sliderTop
