@@ -5,7 +5,7 @@ export default class AnySliderClass {
     this.arr = null;
     this.startValue = null;
     this.endValue = null;
-    this.L = null;
+    this.totalCurveLength = null;
     this.startEvent = null;
     this.moveEvent = null;
     this.endEvent = null;
@@ -32,6 +32,18 @@ export default class AnySliderClass {
         2 * Math.PI
       );
     });
+    if (this.referenceValuesArray) {
+      this.referenceValuesArray.forEach(elem => {
+        ctx.moveTo(elem.x + dotRadius*4 / 2, elem.y + dotRadius*4 / 2);
+        ctx.arc(
+          elem.x,
+          elem.y,
+          dotRadius*4,
+          0,
+          2 * Math.PI
+        );
+      });
+    }
     ctx.fill();
   }
 
@@ -123,6 +135,10 @@ export default class AnySliderClass {
     return this.sliderValue;
   }
 
+  getPersentage() {
+    return this.currL / this.totalCurveLength * 100;
+  }
+
   findNearesELemIndex(value, arr) {
     const values = arr.map(elem => Math.abs(elem - value));
     const foundElemIndex = values.indexOf(Math.min(...values));
@@ -140,12 +156,10 @@ export default class AnySliderClass {
       return this.findCurveLength(arr, ind);
     });
     const Lin =
-      ((value - this.startValue) * this.L) / (this.endValue - this.startValue);
+      ((value - this.startValue) * this.totalCurveLength) / (this.endValue - this.startValue);
     const foundElem = this.arr[this.findNearesELemIndex(Lin, curveLengths)];
-    this.sliderHandle.style.left =
-      foundElem.x - this.sliderHandle.offsetWidth / 2 + "px";
-    this.sliderHandle.style.top =
-      foundElem.y - this.sliderHandle.offsetHeight / 2 + "px";
+
+    this.moveSliderHandle(foundElem.x, foundElem.y);
   }
 
   listen(type, callback) {
@@ -166,7 +180,8 @@ export default class AnySliderClass {
 
   to(elem) {
     const currInd = this.currentElemIndex;
-    const targInd = this.targetElemIndex;
+    // const targInd = this.targetElemIndex;
+    const targInd = this.arr.indexOf(elem);
     const N = Math.abs(targInd - currInd);
     const deltaT = this.transitionTime * 1000 / N;
     // const t = 3;
@@ -180,10 +195,8 @@ export default class AnySliderClass {
     let i = currInd;
     let moveTimeout = () => {
       setTimeout(() => {
-        this.sliderHandle.style.left =
-          this.arr[i].x - this.sliderHandle.offsetWidth / 2 + "px";
-        this.sliderHandle.style.top =
-          this.arr[i].y - this.sliderHandle.offsetHeight / 2 + "px";
+        this.moveSliderHandle(this.arr[i].x, this.arr[i].y);
+
         i = targInd < currInd ? --i : ++i;
         if (i < targInd + 1 && targInd > currInd) {
           moveTimeout();
@@ -195,37 +208,62 @@ export default class AnySliderClass {
     moveTimeout();
   }
 
-  init(elem, param) {
-    const isValuesReseived = param.values ? true : false;
-    const isClickable = param.clickable;
-    this.transitionTime = param.transition.time ? param.transition.time: 1; 
-    this.startValue = isValuesReseived ? param.values.from : null;
-    this.endValue = isValuesReseived ? param.values.to : null;
-    this.arr = this.checkInput(param);
-    this.elem = elem;
+  moveSliderHandle(x, y) {
+    this.sliderHandle.style.left = x - this.sliderHandle.offsetWidth / 2 + "px";
+    this.sliderHandle.style.top = y - this.sliderHandle.offsetHeight / 2 + "px";
+  }
 
-    this.canvasWidth = Math.max(...this.arr.map(elem => elem.x)) + 10;
-    this.canvasHeight = Math.max(...this.arr.map(elem => elem.y)) + 10;
-    const maxInd = 20;
-    let currL = 0;
-    this.L = this.findCurveLength(this.arr);
-    this.render(elem, this.arr);
-    const sliderElem = document.querySelector(".slider");
-    this.sliderHandle = document.querySelector(".slider_handle");
-    const sliderLeft = sliderElem.offsetLeft;
-    const sliderTop = sliderElem.offsetTop;
+  handleReferenceValues() {
+    return this.referenceValues.map((value) => {
+      if (value > this.endValue || value < this.startValue) {
+        console.warn(
+          "Your value is out of your start or end values or you forgot to provied one"
+        );
+        return;
+      }
+      const curveLengths = this.arr.map((elem, ind, arr) => {
+        return this.findCurveLength(arr, ind);
+      });
+      const Lin =
+        ((value - this.startValue) * this.totalCurveLength) / (this.endValue - this.startValue);
+      return this.arr[this.findNearesELemIndex(Lin, curveLengths)];
+    });
+  }
+
+  init(elem, param) {
+    // Константы
+    const defaultTransitionTime = .8;
+    const cutoffInd = 20;
+
+    // Начальные значения
     this.currentElemIndex = 0;
 
-    this.sliderHandle.style.left =
-      this.arr[0].x - this.sliderHandle.offsetWidth / 2 + "px";
-    this.sliderHandle.style.top =
-      this.arr[0].y - this.sliderHandle.offsetHeight / 2 + "px";
+    // Обработка входных параметров
+    this.transitionTime = param.transition.time ? param.transition.time: defaultTransitionTime; 
+    this.startValue = param.values ? param.values.from : null;
+    this.endValue = param.values ? param.values.to : null;
+    this.referenceValues = param.referenceValues ? param.referenceValues.values : null;
 
+    this.elem = elem;
+    this.arr = this.checkInput(param);
+    this.canvasWidth = Math.max(...this.arr.map(elem => elem.x)) + 10;
+    this.canvasHeight = Math.max(...this.arr.map(elem => elem.y)) + 10;
+    this.totalCurveLength = this.findCurveLength(this.arr);
+
+    this.referenceValuesArray = this.referenceValues && this.handleReferenceValues();
+    this.render(this.elem, this.arr);
+    this.sliderElem = document.querySelector(".slider");
+    this.sliderHandle = document.querySelector(".slider_handle");
+    const sliderLeft = this.sliderElem.offsetLeft;
+    const sliderTop = this.sliderElem.offsetTop;
+    
+    this.moveSliderHandle(this.arr[0].x, this.arr[0].y);
+    
     let getCoordsStorage = evt => {
       return evt.targetTouches ? evt.targetTouches[0] : evt;
     };
 
-    if (isClickable !== false) {
+    if (param.clickable !== false) {
       let onSliderClick = evt => {
         if (this.clickEvent) this.elem.dispatchEvent(this.clickEvent);
 
@@ -234,27 +272,32 @@ export default class AnySliderClass {
           x: getCoordsStorage(evt).clientX - sliderLeft,
           y: getCoordsStorage(evt).clientY - sliderTop
         };
-        const foundNearest = this.findNearest(coords.x, coords.y, this.arr);
-        const foundElemIndex = this.arr.indexOf(foundNearest);
+        this.foundElem = this.findNearest(coords.x, coords.y, this.arr);
+        const foundElemIndex = this.arr.indexOf(this.foundElem);
         this.targetElemIndex = foundElemIndex;
-        this.to(foundNearest);
+        this.to(this.foundElem);
 
         this.currentElemIndex = foundElemIndex;
-        currL = this.findCurveLength(this.arr, foundElemIndex);
-        if (isValuesReseived) {
+        this.currL = this.findCurveLength(this.arr, foundElemIndex);
+        if (param.values) {
           this.sliderValue = this.calculateValue(
             this.startValue,
             this.endValue,
-            currL,
-            this.L
+            this.currL,
+            this.totalCurveLength
           );
+        } else {
+          this.sliderValue = this.getPersentage();
         }
       };
       document.addEventListener("click", onSliderClick);
     }
+
     let onMouseDown = evt => {
       evt.preventDefault();
+
       if (this.startEvent) this.sliderHandle.dispatchEvent(this.startEvent);
+
       let coords = {
         x: getCoordsStorage(evt).clientX - sliderLeft,
         y: getCoordsStorage(evt).clientY - sliderTop
@@ -265,14 +308,12 @@ export default class AnySliderClass {
 
         if (this.moveEvent) document.dispatchEvent(this.moveEvent);
 
-        const foundElem = this.findNearest(coords.x, coords.y, this.arr);
-        const foundElemIndex = this.arr.indexOf(foundElem);
-        if (Math.abs(foundElemIndex - this.currentElemIndex) < maxInd) {
+        this.foundElem = this.findNearest(coords.x, coords.y, this.arr);
+        const foundElemIndex = this.arr.indexOf(this.foundElem);
+
+        if (Math.abs(foundElemIndex - this.currentElemIndex) < cutoffInd) {
           this.currentElemIndex = foundElemIndex;
-          this.sliderHandle.style.left =
-            foundElem.x - this.sliderHandle.offsetWidth / 2 + "px";
-          this.sliderHandle.style.top =
-            foundElem.y - this.sliderHandle.offsetHeight / 2 + "px";
+          this.moveSliderHandle(this.foundElem.x, this.foundElem.y);
         }
 
         coords = {
@@ -280,21 +321,29 @@ export default class AnySliderClass {
           y: getCoordsStorage(moveEvt).clientY - sliderTop
         };
 
-        const currInd = this.arr.indexOf(foundElem);
-        currL = this.findCurveLength(this.arr, currInd);
-        if (isValuesReseived) {
+        const currInd = this.arr.indexOf(this.foundElem);
+        this.currL = this.findCurveLength(this.arr, currInd);
+        if (param.values) {
           this.sliderValue = this.calculateValue(
             this.startValue,
             this.endValue,
-            currL,
-            this.L
+            this.currL,
+            this.totalCurveLength
           );
+        } else {
+            this.sliderValue = this.getPersentage();
         }
       };
 
       let onMouseUp = upEvt => {
         upEvt.preventDefault();
         if (this.endEvent) document.dispatchEvent(this.endEvent);
+
+        if (this.referenceValuesArray) {
+          const foundReferenceElem = this.findNearest(this.foundElem.x, this.foundElem.y, this.referenceValuesArray);
+          this.foundElem = this.findNearest(foundReferenceElem.x, foundReferenceElem.y, this.arr);;
+          this.to(this.foundElem);
+        }
 
         document.removeEventListener("mousemove", onMouseMove);
         document.removeEventListener("touchmove", onMouseMove);

@@ -31,6 +31,9 @@ const options = {
   transition: {
     t: 2
   },
+  referenceValues: {
+    values: [0, 50, 100, 150, 200, 250, 300]
+  }
   
 };
 
