@@ -158,14 +158,53 @@ export default class AnySliderClass {
     } else if (type === "end") {
       this.endEvent = new Event("end");
       document.addEventListener("end", callback, false);
+    } else if (type === "click") {
+      this.clickEvent = new Event("click");
+      document.addEventListener("click", callback, false);
     }
+  }
+
+  to(elem) {
+    console.log("targ", this.targetElemIndex);
+    console.log("curr", this.currentElemIndex);
+
+    const currInd = this.currentElemIndex;
+    const targInd = this.targetElemIndex;
+    const t = 3;
+    const N = Math.abs(targInd - currInd);
+    const v = N / t;
+    const tArr = this.createArray(0, t, N);
+    const vArr = this.createArray(v, v, N);
+    const sArr = vArr.map((elem, i) => {
+      return Math.round(elem * tArr[i]);
+    });
+
+    let i = currInd;
+    let moveTimeout = () => {
+      setTimeout(() => {
+        this.sliderHandle.style.left =
+          this.arr[i].x - this.sliderHandle.offsetWidth / 2 + "px";
+        this.sliderHandle.style.top =
+          this.arr[i].y - this.sliderHandle.offsetHeight / 2 + "px";
+        i = targInd < currInd ? --i : ++i;
+
+        if (i < targInd + 1 && targInd > currInd) {
+          moveTimeout();
+        } else if (i > targInd && targInd < currInd) {
+          moveTimeout();
+        }
+      }, 10);
+    };
+    moveTimeout();
   }
 
   init(elem, param) {
     const isValuesReseived = param.values ? true : false;
+    const isClickable = param.clickable;
     this.startValue = isValuesReseived ? param.values.from : null;
     this.endValue = isValuesReseived ? param.values.to : null;
     this.arr = this.checkInput(param);
+    this.elem = elem;
 
     this.canvasWidth = Math.max(...this.arr.map(elem => elem.x)) + 10;
     this.canvasHeight = Math.max(...this.arr.map(elem => elem.y)) + 10;
@@ -177,7 +216,7 @@ export default class AnySliderClass {
     this.sliderHandle = document.querySelector(".slider_handle");
     const sliderLeft = sliderElem.offsetLeft;
     const sliderTop = sliderElem.offsetTop;
-    let currentElemIndex = 0;
+    this.currentElemIndex = 0;
 
     this.sliderHandle.style.left =
       this.arr[0].x - this.sliderHandle.offsetWidth / 2 + "px";
@@ -188,6 +227,40 @@ export default class AnySliderClass {
       return evt.targetTouches ? evt.targetTouches[0] : evt;
     };
 
+    if (isClickable !== false) {
+      let onSliderClick = evt => {
+        if (this.clickEvent) this.elem.dispatchEvent(this.clickEvent);
+
+        evt.preventDefault();
+        let coords = {
+          x: getCoordsStorage(evt).clientX - sliderLeft,
+          y: getCoordsStorage(evt).clientY - sliderTop
+        };
+        const foundNearest = this.findNearest(coords.x, coords.y, this.arr);
+        const foundElemIndex = this.arr.indexOf(foundNearest);
+        this.targetElemIndex = foundElemIndex;
+        // this.currentElemIndex = foundElemIndex;
+        this.to(foundNearest);
+
+        this.currentElemIndex = foundElemIndex;
+        // this.targetElemIndex = foundElemIndex;
+        // this.to(foundNearest);
+        // this.sliderHandle.style.left =
+        //   foundNearest.x - this.sliderHandle.offsetWidth / 2 + "px";
+        // this.sliderHandle.style.top =
+        //   foundNearest.y - this.sliderHandle.offsetHeight / 2 + "px";
+        currL = this.findCurveLength(this.arr, foundElemIndex);
+        if (isValuesReseived) {
+          this.sliderValue = this.calculateValue(
+            this.startValue,
+            this.endValue,
+            currL,
+            this.L
+          );
+        }
+      };
+      document.addEventListener("click", onSliderClick);
+    }
     let onMouseDown = evt => {
       evt.preventDefault();
       if (this.startEvent) this.sliderHandle.dispatchEvent(this.startEvent);
@@ -206,8 +279,8 @@ export default class AnySliderClass {
 
         const foundElem = this.findNearest(coords.x, coords.y, this.arr);
         const foundElemIndex = this.arr.indexOf(foundElem);
-        if (Math.abs(foundElemIndex - currentElemIndex) < maxInd) {
-          currentElemIndex = foundElemIndex;
+        if (Math.abs(foundElemIndex - this.currentElemIndex) < maxInd) {
+          this.currentElemIndex = foundElemIndex;
           this.sliderHandle.style.left =
             foundElem.x - this.sliderHandle.offsetWidth / 2 + "px";
           this.sliderHandle.style.top =
