@@ -30,7 +30,8 @@ const options = {
   clickable: true,
   transition: {
     t: 2
-  }
+  },
+  
 };
 
 // const options = {
