@@ -28,12 +28,29 @@ export default class AnySliderClass {
         ctx.arc(elem.x, elem.y, dotRadius, 0, 2 * Math.PI);
       });
       if (this.referenceValuesArray) {
-        this.referenceValuesArray.forEach(elem => {
+        const myArr = this.createArrayH(-50, 50, 1);
+        const myElem = this.findNearest(
+          this.referenceValuesArray[2].x,
+          this.referenceValuesArray[2].y,
+          arr
+        );
+        myArr.forEach(r => {
+          const coords = this.calulateDashCoords(myElem, arr, r);
+          ctx.moveTo(coords.x + dotRadius / 2, coords.y + dotRadius / 2);
+          ctx.arc(coords.x, coords.y, dotRadius, 0, 2 * Math.PI);
+        });
+        this.referenceValuesArray.forEach(referenceElem => {
           ctx.moveTo(
-            elem.x + (dotRadius * 4) / 2,
-            elem.y + (dotRadius * 4) / 2
+            referenceElem.x + (dotRadius * 2) / 2,
+            referenceElem.y + (dotRadius * 2) / 2
           );
-          ctx.arc(elem.x, elem.y, dotRadius * 4, 0, 2 * Math.PI);
+          ctx.arc(
+            referenceElem.x,
+            referenceElem.y,
+            dotRadius * 4,
+            0,
+            2 * Math.PI
+          );
         });
       }
       ctx.fill();
@@ -108,8 +125,8 @@ export default class AnySliderClass {
     }
     if (param.type.curve === "arc") {
       const { r, fi1, fi2 } = param.type;
-      // const dfi = 2 * Math.asin(1 / r / Math.sqrt(2));
-      return this.createArrayH(fi1, fi2, 0.5)
+      const dfi = (2 * Math.asin(1 / r / Math.sqrt(2)) * 180) / Math.PI;
+      return this.createArrayH(fi1, fi2, dfi)
         .map(elem => (elem * Math.PI) / 180)
         .map(elem => {
           let xAbs = r * Math.cos(elem);
@@ -187,8 +204,6 @@ export default class AnySliderClass {
     const targInd = this.arr.indexOf(elem);
     const N = Math.abs(targInd - currInd);
     const deltaT = (this.transitionTime * 1000) / N;
-    console.log(this.transitionTime);
-    console.log(deltaT);
 
     // const t = 3;
     // const v = N / t;
@@ -254,6 +269,18 @@ export default class AnySliderClass {
       return elem;
     });
   }
+  calulateDashCoords(elem, arr, r) {
+    const elemIndex = arr.indexOf(elem);
+    const alpha = Math.atan(
+      (arr[elemIndex + 1].y - arr[elemIndex].y) /
+        (arr[elemIndex + 1].x - arr[elemIndex].x)
+    );
+
+    return {
+      x: elem.x + r * Math.cos(Math.PI / 2 + alpha),
+      y: elem.y + r * Math.sin(Math.PI / 2 + alpha)
+    };
+  }
   init(elem, param) {
     // Константы
     const defaultTransitionTime = 0.8;
@@ -279,6 +306,7 @@ export default class AnySliderClass {
     this.elem = elem;
     this.arr = this.checkInput(param);
     this.arr = this.shiftInputArray(this.arr);
+    // this.renderDash(this.arr[180], this.arr);
 
     this.canvasWidth = Math.max(...this.arr.map(elem => elem.x)) + 50;
     this.canvasHeight = Math.max(...this.arr.map(elem => elem.y)) + 50;
