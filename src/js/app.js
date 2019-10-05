@@ -9,19 +9,17 @@ const fi2 = 200 * Math.PI;
 const w = 1 / 50;
 const N = 100;
 
-const arr = anySlider.createArray(fi1, fi2, N).map(elem => {
+const arr = anySlider.createArrayH(fi1, fi2, 1).map(elem => {
   let xAbs = elem;
   let yAbs = A * Math.sin(w * elem);
   return { x: xAbs, y: yAbs };
 });
 const options = {
-  // arr: arr,
   type: {
-    curve: "spiral",
-    fi1: 0,
-    fi2: 720,
-    r1: 0,
-    r2: 200
+    curve: "arc",
+    r: 250,
+    fi1: 90,
+    fi2: 270
   },
   values: {
     from: 0,
@@ -29,12 +27,16 @@ const options = {
   },
   clickable: true,
   transition: {
-    t: 2
+    t: 0.4
   },
   referenceValues: {
     values: [0, 50, 100, 150, 200, 250, 300]
+  },
+  render: {
+    visible: true,
+    color: "pink",
+    width: 6
   }
-  
 };
 
 // const options = {

@@ -14,41 +14,42 @@ export default class AnySliderClass {
   render(elem, arr) {
     elem.innerHTML = `
       <div class="slider_handle"></div>
-      <canvas id='canvas'></canvas>
+      ${this.isVisible ? "<canvas id='canvas'></canvas>" : ""}
     `;
-    const canvas = document.querySelector("#canvas");
-    const dotRadius = 2;
-    canvas.width = this.canvasWidth;
-    canvas.height = this.canvasHeight;
-    const ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#000000";
-    arr.forEach(elem => {
-      ctx.moveTo(elem.x + dotRadius / 2, elem.y + dotRadius / 2);
-      ctx.arc(
-        elem.x,
-        elem.y,
-        dotRadius,
-        0,
-        2 * Math.PI
-      );
-    });
-    if (this.referenceValuesArray) {
-      this.referenceValuesArray.forEach(elem => {
-        ctx.moveTo(elem.x + dotRadius*4 / 2, elem.y + dotRadius*4 / 2);
-        ctx.arc(
-          elem.x,
-          elem.y,
-          dotRadius*4,
-          0,
-          2 * Math.PI
-        );
+    if (this.isVisible) {
+      const canvas = document.querySelector("#canvas");
+      const dotRadius = this.lineWidth / 2;
+      canvas.width = this.canvasWidth;
+      canvas.height = this.canvasHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = this.lineColor;
+      arr.forEach(elem => {
+        ctx.moveTo(elem.x + dotRadius / 2, elem.y + dotRadius / 2);
+        ctx.arc(elem.x, elem.y, dotRadius, 0, 2 * Math.PI);
       });
+      if (this.referenceValuesArray) {
+        this.referenceValuesArray.forEach(elem => {
+          ctx.moveTo(
+            elem.x + (dotRadius * 4) / 2,
+            elem.y + (dotRadius * 4) / 2
+          );
+          ctx.arc(elem.x, elem.y, dotRadius * 4, 0, 2 * Math.PI);
+        });
+      }
+      ctx.fill();
     }
-    ctx.fill();
   }
 
   createArray(begin, end, N) {
     const h = (end - begin) / N;
+    const arr = [begin];
+    for (let i = 1; i <= N; i++) {
+      arr.push(arr[i - 1] + h);
+    }
+    return arr;
+  }
+  createArrayH(begin, end, h) {
+    const N = (end - begin) / h;
     const arr = [begin];
     for (let i = 1; i <= N; i++) {
       arr.push(arr[i - 1] + h);
@@ -87,11 +88,11 @@ export default class AnySliderClass {
     }
     if (param.type.curve === "circle") {
       const R = param.type.r;
-      return this.createArray(0, 360, N)
+      return this.createArrayH(0, 360, 1)
         .map(elem => (elem * Math.PI) / 180)
         .map(elem => {
-          let xAbs = R + R * Math.cos(elem);
-          let yAbs = R + R * Math.sin(elem);
+          let xAbs = R * Math.cos(elem);
+          let yAbs = R * Math.sin(elem);
           return { x: xAbs, y: yAbs };
         });
     }
@@ -100,18 +101,19 @@ export default class AnySliderClass {
       return this.createArray(fi1, fi2, N)
         .map(elem => (elem * Math.PI) / 180)
         .map((elem, i) => {
-          let xAbs = r2 + this.createArray(r1, r2, N)[i] * Math.cos(elem);
-          let yAbs = r2 + this.createArray(r1, r2, N)[i] * Math.sin(elem);
+          let xAbs = this.createArray(r1, r2, N)[i] * Math.cos(elem);
+          let yAbs = this.createArray(r1, r2, N)[i] * Math.sin(elem);
           return { x: xAbs, y: yAbs };
         });
     }
     if (param.type.curve === "arc") {
       const { r, fi1, fi2 } = param.type;
-      return this.createArray(fi1, fi2, N)
+      // const dfi = 2 * Math.asin(1 / r / Math.sqrt(2));
+      return this.createArrayH(fi1, fi2, 0.5)
         .map(elem => (elem * Math.PI) / 180)
         .map(elem => {
-          let xAbs = r + r * Math.cos(elem);
-          let yAbs = r + r * Math.sin(elem);
+          let xAbs = r * Math.cos(elem);
+          let yAbs = r * Math.sin(elem);
           return { x: xAbs, y: yAbs };
         });
     }
@@ -136,7 +138,7 @@ export default class AnySliderClass {
   }
 
   getPersentage() {
-    return this.currL / this.totalCurveLength * 100;
+    return (this.currL / this.totalCurveLength) * 100;
   }
 
   findNearesELemIndex(value, arr) {
@@ -156,7 +158,8 @@ export default class AnySliderClass {
       return this.findCurveLength(arr, ind);
     });
     const Lin =
-      ((value - this.startValue) * this.totalCurveLength) / (this.endValue - this.startValue);
+      ((value - this.startValue) * this.totalCurveLength) /
+      (this.endValue - this.startValue);
     const foundElem = this.arr[this.findNearesELemIndex(Lin, curveLengths)];
 
     this.moveSliderHandle(foundElem.x, foundElem.y);
@@ -183,7 +186,10 @@ export default class AnySliderClass {
     // const targInd = this.targetElemIndex;
     const targInd = this.arr.indexOf(elem);
     const N = Math.abs(targInd - currInd);
-    const deltaT = this.transitionTime * 1000 / N;
+    const deltaT = (this.transitionTime * 1000) / N;
+    console.log(this.transitionTime);
+    console.log(deltaT);
+
     // const t = 3;
     // const v = N / t;
     // const tArr = this.createArray(0, t, N);
@@ -200,7 +206,7 @@ export default class AnySliderClass {
         i = targInd < currInd ? --i : ++i;
         if (i < targInd + 1 && targInd > currInd) {
           moveTimeout();
-        } else if (i > targInd && targInd < currInd) {
+        } else if (i > targInd - 1 && targInd < currInd) {
           moveTimeout();
         }
       }, deltaT);
@@ -214,7 +220,7 @@ export default class AnySliderClass {
   }
 
   handleReferenceValues() {
-    return this.referenceValues.map((value) => {
+    return this.referenceValues.map(value => {
       if (value > this.endValue || value < this.startValue) {
         console.warn(
           "Your value is out of your start or end values or you forgot to provied one"
@@ -225,45 +231,74 @@ export default class AnySliderClass {
         return this.findCurveLength(arr, ind);
       });
       const Lin =
-        ((value - this.startValue) * this.totalCurveLength) / (this.endValue - this.startValue);
+        ((value - this.startValue) * this.totalCurveLength) /
+        (this.endValue - this.startValue);
       return this.arr[this.findNearesELemIndex(Lin, curveLengths)];
     });
   }
 
+  shiftInputArray(arr) {
+    const arrMinX = Math.min(...arr.map(elem => elem.x));
+    const arrMaxX = Math.max(...arr.map(elem => elem.x));
+    const arrMinY = Math.min(...arr.map(elem => elem.y));
+    const arrMaxY = Math.max(...arr.map(elem => elem.y));
+    return arr.map(elem => {
+      elem.y += 10;
+      elem.x += 10;
+      if (arrMinY < 0) {
+        elem.y -= arrMinY - 20;
+      }
+      if (arrMinX < 0) {
+        elem.x -= arrMinX - 20;
+      }
+      return elem;
+    });
+  }
   init(elem, param) {
     // Константы
-    const defaultTransitionTime = .8;
-    const cutoffInd = 20;
+    const defaultTransitionTime = 0.8;
+    const cutoffInd = 30;
 
     // Начальные значения
     this.currentElemIndex = 0;
 
     // Обработка входных параметров
-    this.transitionTime = param.transition.time ? param.transition.time: defaultTransitionTime; 
+    this.transitionTime = param.transition.t
+      ? param.transition.t
+      : defaultTransitionTime;
     this.startValue = param.values ? param.values.from : null;
     this.endValue = param.values ? param.values.to : null;
-    this.referenceValues = param.referenceValues ? param.referenceValues.values : null;
+    this.referenceValues = param.referenceValues
+      ? param.referenceValues.values
+      : null;
+    this.isVisible =
+      param.render.visible !== undefined ? param.render.visible : true;
+    this.lineColor = param.render.color ? param.render.color : "#000000";
+    this.lineWidth = param.render.width ? param.render.width : 4;
 
     this.elem = elem;
     this.arr = this.checkInput(param);
-    this.canvasWidth = Math.max(...this.arr.map(elem => elem.x)) + 10;
-    this.canvasHeight = Math.max(...this.arr.map(elem => elem.y)) + 10;
+    this.arr = this.shiftInputArray(this.arr);
+
+    this.canvasWidth = Math.max(...this.arr.map(elem => elem.x)) + 50;
+    this.canvasHeight = Math.max(...this.arr.map(elem => elem.y)) + 50;
     this.totalCurveLength = this.findCurveLength(this.arr);
 
-    this.referenceValuesArray = this.referenceValues && this.handleReferenceValues();
+    this.referenceValuesArray =
+      this.referenceValues && this.handleReferenceValues();
     this.render(this.elem, this.arr);
     this.sliderElem = document.querySelector(".slider");
     this.sliderHandle = document.querySelector(".slider_handle");
     const sliderLeft = this.sliderElem.offsetLeft;
     const sliderTop = this.sliderElem.offsetTop;
-    
+
     this.moveSliderHandle(this.arr[0].x, this.arr[0].y);
-    
+
     let getCoordsStorage = evt => {
       return evt.targetTouches ? evt.targetTouches[0] : evt;
     };
 
-    if (param.clickable !== false) {
+    if (param.clickable !== false && !param.referenceValues) {
       let onSliderClick = evt => {
         if (this.clickEvent) this.elem.dispatchEvent(this.clickEvent);
 
@@ -331,7 +366,7 @@ export default class AnySliderClass {
             this.totalCurveLength
           );
         } else {
-            this.sliderValue = this.getPersentage();
+          this.sliderValue = this.getPersentage();
         }
       };
 
@@ -340,8 +375,16 @@ export default class AnySliderClass {
         if (this.endEvent) document.dispatchEvent(this.endEvent);
 
         if (this.referenceValuesArray) {
-          const foundReferenceElem = this.findNearest(this.foundElem.x, this.foundElem.y, this.referenceValuesArray);
-          this.foundElem = this.findNearest(foundReferenceElem.x, foundReferenceElem.y, this.arr);;
+          const foundReferenceElem = this.findNearest(
+            this.foundElem.x,
+            this.foundElem.y,
+            this.referenceValuesArray
+          );
+          this.foundElem = this.findNearest(
+            foundReferenceElem.x,
+            foundReferenceElem.y,
+            this.arr
+          );
           this.to(this.foundElem);
         }
 
