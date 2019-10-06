@@ -28,29 +28,29 @@ export default class AnySliderClass {
         ctx.arc(elem.x, elem.y, dotRadius, 0, 2 * Math.PI);
       });
       if (this.referenceValuesArray) {
-        const myArr = this.createArrayH(-50, 50, 1);
-        const myElem = this.findNearest(
-          this.referenceValuesArray[2].x,
-          this.referenceValuesArray[2].y,
-          arr
-        );
-        myArr.forEach(r => {
-          const coords = this.calulateDashCoords(myElem, arr, r);
-          ctx.moveTo(coords.x + dotRadius / 2, coords.y + dotRadius / 2);
-          ctx.arc(coords.x, coords.y, dotRadius, 0, 2 * Math.PI);
-        });
         this.referenceValuesArray.forEach(referenceElem => {
-          ctx.moveTo(
-            referenceElem.x + (dotRadius * 2) / 2,
-            referenceElem.y + (dotRadius * 2) / 2
-          );
-          ctx.arc(
+          const myElem = this.findNearest(
             referenceElem.x,
             referenceElem.y,
-            dotRadius * 4,
-            0,
-            2 * Math.PI
+            arr
           );
+          const dashStart = this.calulateDashCoords(myElem, arr, 20);
+          const dashEnd = this.calulateDashCoords(myElem, arr, -20);
+          ctx.moveTo(dashStart.x, dashStart.y);
+          ctx.lineTo(dashEnd.x, dashEnd.y);
+          ctx.stroke();
+
+          // ctx.moveTo(
+          //   referenceElem.x + (dotRadius * 2) / 2,
+          //   referenceElem.y + (dotRadius * 2) / 2
+          // );
+          // ctx.arc(
+          //   referenceElem.x,
+          //   referenceElem.y,
+          //   dotRadius * 4,
+          //   0,
+          //   2 * Math.PI
+          // );
         });
       }
       ctx.fill();
@@ -271,7 +271,10 @@ export default class AnySliderClass {
   }
   calulateDashCoords(elem, arr, r) {
     const elemIndex = arr.indexOf(elem);
-    const alpha = Math.atan(
+    const alpha =  elemIndex === arr.length - 1 ? Math.atan(
+      (arr[elemIndex].y - arr[elemIndex - 1].y) /
+        (arr[elemIndex].x - arr[elemIndex - 1].x)
+    ) : Math.atan(
       (arr[elemIndex + 1].y - arr[elemIndex].y) /
         (arr[elemIndex + 1].x - arr[elemIndex].x)
     );
