@@ -15,11 +15,13 @@ const arr = anySlider.createArrayH(fi1, fi2, 1).map(elem => {
   return { x: xAbs, y: yAbs };
 });
 const options = {
+  arr: arr,
   type: {
-    curve: "arc",
-    r: 250,
-    fi1: 90,
-    fi2: 270
+    curve: 'spiral',
+    fi1: 0,
+    fi2: 720,
+    r1: 0,
+    r2: 200
   },
   values: {
     from: 0,
@@ -30,7 +32,7 @@ const options = {
     t: 0.4
   },
   referenceValues: {
-    values: [0, 50, 100, 150, 200, 250, 300]
+    values: [25, 50, 100, 150, 200, 250, 275]
   },
   render: {
     visible: true,

@@ -35,7 +35,7 @@ export default class AnySliderClass {
             arr
           );
           const dashStart = this.calulateDashCoords(myElem, arr, 20);
-          const dashEnd = this.calulateDashCoords(myElem, arr, -20);
+          const dashEnd = this.calulateDashCoords(myElem, arr, 0);
           ctx.moveTo(dashStart.x, dashStart.y);
           ctx.lineTo(dashEnd.x, dashEnd.y);
           ctx.stroke();
@@ -227,6 +227,7 @@ export default class AnySliderClass {
       }, deltaT);
     };
     moveTimeout();
+    this.currentElemIndex = targInd;
   }
 
   moveSliderHandle(x, y) {
@@ -271,19 +272,27 @@ export default class AnySliderClass {
   }
   calulateDashCoords(elem, arr, r) {
     const elemIndex = arr.indexOf(elem);
-    const alpha =  elemIndex === arr.length - 1 ? Math.atan(
+    const diff = elemIndex === arr.length - 1 ? 
       (arr[elemIndex].y - arr[elemIndex - 1].y) /
-        (arr[elemIndex].x - arr[elemIndex - 1].x)
-    ) : Math.atan(
+        (arr[elemIndex].x - arr[elemIndex - 1].x): 
       (arr[elemIndex + 1].y - arr[elemIndex].y) /
-        (arr[elemIndex + 1].x - arr[elemIndex].x)
-    );
+        (arr[elemIndex + 1].x - arr[elemIndex].x);
+    
+    const alpha = Math.atan(diff);
+
+    // Чтобы все всегда было с одной стороны кривой:
+    console.log('diff: ',diff);
+    console.log('alpha: ', alpha * 180 / Math.PI);
+    
+    // const fiAdd = diff < 0 ? Math.PI : 0;
+    const fiAdd = 0;
 
     return {
-      x: elem.x + r * Math.cos(Math.PI / 2 + alpha),
-      y: elem.y + r * Math.sin(Math.PI / 2 + alpha)
+      x: elem.x + r * Math.cos(fiAdd + Math.PI / 2 + alpha),
+      y: elem.y + r * Math.sin(fiAdd + Math.PI / 2 + alpha)
     };
   }
+
   init(elem, param) {
     // Константы
     const defaultTransitionTime = 0.8;
@@ -309,7 +318,6 @@ export default class AnySliderClass {
     this.elem = elem;
     this.arr = this.checkInput(param);
     this.arr = this.shiftInputArray(this.arr);
-    // this.renderDash(this.arr[180], this.arr);
 
     this.canvasWidth = Math.max(...this.arr.map(elem => elem.x)) + 50;
     this.canvasHeight = Math.max(...this.arr.map(elem => elem.y)) + 50;
@@ -339,12 +347,12 @@ export default class AnySliderClass {
           y: getCoordsStorage(evt).clientY - sliderTop
         };
         this.foundElem = this.findNearest(coords.x, coords.y, this.arr);
-        const foundElemIndex = this.arr.indexOf(this.foundElem);
-        this.targetElemIndex = foundElemIndex;
+        this.foundElemIndex = this.arr.indexOf(this.foundElem);
+        this.targetElemIndex = this.foundElemIndex;
         this.to(this.foundElem);
 
-        this.currentElemIndex = foundElemIndex;
-        this.currL = this.findCurveLength(this.arr, foundElemIndex);
+        this.currentElemIndex = this.foundElemIndex;
+        this.currL = this.findCurveLength(this.arr, this.foundElemIndex);
         if (param.values) {
           this.sliderValue = this.calculateValue(
             this.startValue,
@@ -375,10 +383,10 @@ export default class AnySliderClass {
         if (this.moveEvent) document.dispatchEvent(this.moveEvent);
 
         this.foundElem = this.findNearest(coords.x, coords.y, this.arr);
-        const foundElemIndex = this.arr.indexOf(this.foundElem);
+        this.foundElemIndex = this.arr.indexOf(this.foundElem);
 
-        if (Math.abs(foundElemIndex - this.currentElemIndex) < cutoffInd) {
-          this.currentElemIndex = foundElemIndex;
+        if (Math.abs(this.foundElemIndex - this.currentElemIndex) < cutoffInd) {
+          this.currentElemIndex = this.foundElemIndex;
           this.moveSliderHandle(this.foundElem.x, this.foundElem.y);
         }
 
