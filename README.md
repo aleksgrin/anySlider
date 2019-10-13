@@ -1,3 +1,22 @@
+## The basic usage
+To init a slider you just need to have a slider elem inside your HTML, all other work will be done for you.
+To customize the slider type one should use the options object with the folowing structure:
+```js
+const anySlider = new AnySlider();
+const slider = document.querySelector(".slider");
+const options = {
+  type: {
+    curve: "arc",
+    r: 250,
+    fi1: 90,
+    fi2: 270
+  }
+};
+anySlider.init(slider, options);
+```
+To see more availible curve types and their parameters follow appropriate section.
+After you run this code you will see:
+![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/1.jpg)
 ## Примеры формирования объекта options
 Для кругового слайдера необходимо задать только один параметр: радиус окружности
 ```js

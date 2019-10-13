@@ -302,7 +302,7 @@ export default class AnySliderClass {
     this.currentElemIndex = 0;
 
     // Обработка входных параметров
-    this.transitionTime = param.transition.t
+    this.transitionTime = param.transition && param.transition.t
       ? param.transition.t
       : defaultTransitionTime;
     this.startValue = param.values ? param.values.from : null;
@@ -311,9 +311,9 @@ export default class AnySliderClass {
       ? param.referenceValues.values
       : null;
     this.isVisible =
-      param.render.visible !== undefined ? param.render.visible : true;
-    this.lineColor = param.render.color ? param.render.color : "#000000";
-    this.lineWidth = param.render.width ? param.render.width : 4;
+    param.render && param.render.visible !== undefined ? param.render.visible : true;
+    this.lineColor = param.render && param.render.color ? param.render.color : "#000000";
+    this.lineWidth = param.render && param.render.width ? param.render.width : 4;
 
     this.elem = elem;
     this.arr = this.checkInput(param);
