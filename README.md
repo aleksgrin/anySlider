@@ -24,11 +24,11 @@ const options = {
   arr: yourArr
 };
 ```
-Your arr should have the following structure:
+Where your arr should have the following structure:
 ```js 
 const arr = [{x: 10, y: 10}, {x: 20, y: 20}, ...]
 ```
-For exaple lets make a sin slider:
+For example lets make a sin slider:
 
 ```js
 const A = 60;
@@ -45,7 +45,7 @@ const myArr = anySlider.createArrayH(fi1, fi2, 1).map(elem => {
 ```
 ![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/2.jpg)
 
-Ass you've noticed to create array with the given step you can a method ```createArrayH(x1, x2, h)```.
+Ass you've noticed to create array with the given step you can use a slider method ```createArrayH(x1, x2, h)```.
 Or you can use ```createArray(x1, x2, N)``` to create array with the given number of points.
 
 Note, that if the arr property is given than the type property is ignored.
@@ -64,6 +64,8 @@ Available event types:
 - move (mousemove of a slider)
 - end (the end of slider moving)
 - click (click on a slider)
+## Get and set values
+
 ## Примеры формирования объекта options
 Для кругового слайдера необходимо задать только один параметр: радиус окружности
 ```js
