@@ -14,42 +14,43 @@ const arr = anySlider.createArrayH(fi1, fi2, 1).map(elem => {
   let yAbs = A * Math.sin(w * elem);
   return { x: xAbs, y: yAbs };
 });
+const options = {
+  // arr: arr,
+  type: {
+    curve: "spiral",
+    fi1: 60,
+    fi2: 320,
+    r1: 80,
+    r2: 200
+  },
+  values: {
+    from: 0,
+    to: 300
+  },
+  clickable: true,
+  transition: {
+    t: 0.4
+  },
+  referenceValues: {
+    // values: [25, 50, 75, 100, 150, 200, 250, 275]
+    values: anySlider.createArrayH(10, 300, 50)
+  },
+  render: {
+    visible: true,
+    color: "pink",
+    width: 6
+  }
+};
+
 // const options = {
 //   arr: arr,
 //   type: {
-//     curve: 'spiral',
-//     fi1: 0,
-//     fi2: 720,
-//     r1: 0,
-//     r2: 200
-//   },
-//   values: {
-//     from: 0,
-//     to: 300
-//   },
-//   clickable: true,
-//   transition: {
-//     t: 0.4
-//   },
-//   referenceValues: {
-//     values: [25, 50, 100, 150, 200, 250, 275]
-//   },
-//   render: {
-//     visible: true,
-//     color: "pink",
-//     width: 6
+//     curve: "arc",
+//     r: 250,
+//     fi1: 90,
+//     fi2: 270
 //   }
 // };
-
-const options = {
-  arr: arr,
-  type: {
-    curve: "arc",
-    r: 250,
-    fi1: 90,
-    fi2: 270
-  }
-};
 
 anySlider.init(slider, options);
 // anySlider.listen("start", () => {

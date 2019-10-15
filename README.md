@@ -68,8 +68,8 @@ Available event types:
 ```anyslider.get()``` - if values property in options object is not added will return a value from 0 to 100. Where 0 
 is the begining of a curve and 100 is its' end. Else return value is current slider value
 ```anyslider.getPers()``` - returns a value from 0 to 100. Where 0 is the begining of a curve and 100 is its' end.
-```anyslider.set()``` - 
-```anyslider.setPers()``` - 
+```anyslider.set()``` - sets slider value to input value that has to be from 0 to 100 if values property in options object is not added or a value from values property interval
+```anyslider.setPers()``` - sets value in persentage from 0 to 100
 ## Примеры формирования объекта options
 Для кругового слайдера необходимо задать только один параметр: радиус окружности
 ```js
@@ -126,6 +126,5 @@ const options = {
 ```
 
 TODO: 
-- []: Добавить set в процентах
 - []: Нарисовать свой слайдер
 - []: Значения и штрихи на кривой

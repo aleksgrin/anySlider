@@ -28,16 +28,17 @@ export default class AnySliderClass {
         ctx.arc(elem.x, elem.y, dotRadius, 0, 2 * Math.PI);
       });
       if (this.referenceValuesArray) {
-        this.referenceValuesArray.forEach(referenceElem => {
+        this.referenceValuesArray.forEach((referenceElem, i) => {
           const myElem = this.findNearest(
             referenceElem.x,
             referenceElem.y,
             arr
           );
           const dashStart = this.calulateDashCoords(myElem, arr, 20);
-          const dashEnd = this.calulateDashCoords(myElem, arr, 0);
+
+          // const dashEnd = this.calulateDashCoords(myElem, arr, 0);
           ctx.moveTo(dashStart.x, dashStart.y);
-          ctx.lineTo(dashEnd.x, dashEnd.y);
+          ctx.lineTo(myElem.x, myElem.y);
           ctx.stroke();
 
           // ctx.moveTo(
@@ -115,13 +116,17 @@ export default class AnySliderClass {
     }
     if (param.type.curve === "spiral") {
       const { fi1, fi2, r1, r2 } = param.type;
-      return this.createArray(fi1, fi2, N)
-        .map(elem => (elem * Math.PI) / 180)
-        .map((elem, i) => {
-          let xAbs = this.createArray(r1, r2, N)[i] * Math.cos(elem);
-          let yAbs = this.createArray(r1, r2, N)[i] * Math.sin(elem);
-          return { x: xAbs, y: yAbs };
-        });
+      const N = 1000;
+      return (
+        this.createArray(fi1, fi2, N)
+          // return this.createArrayH(fi1, fi2, 1)
+          .map(elem => (elem * Math.PI) / 180)
+          .map((elem, i) => {
+            let xAbs = this.createArray(r1, r2, N)[i] * Math.cos(elem);
+            let yAbs = this.createArray(r1, r2, N)[i] * Math.sin(elem);
+            return { x: xAbs, y: yAbs };
+          })
+      );
     }
     if (param.type.curve === "arc") {
       const { r, fi1, fi2 } = param.type;
@@ -164,21 +169,36 @@ export default class AnySliderClass {
     return foundElemIndex;
   }
   set(value) {
-    if (value > this.endValue || value < this.startValue) {
-      console.warn(
-        "Your value is out of your start or end values or you forgot to provied one"
-      );
+    if (this.startValue && this.endValue) {
+      if (value > this.endValue || value < this.startValue) {
+        console.warn(
+          "Your value is out of your start or end values or you forgot to provied one"
+        );
+        return;
+      }
+      this.sliderValue = value;
+      const Lin =
+        ((value - this.startValue) * this.totalCurveLength) /
+        (this.endValue - this.startValue);
+      const foundElem = this.arr[
+        this.findNearesELemIndex(Lin, this.curveLengths)
+      ];
+
+      this.moveSliderHandle(foundElem.x, foundElem.y);
+    } else {
+      this.setPers(value);
+    }
+  }
+
+  setPers(value) {
+    if (value > 100 || value < 0) {
+      console.warn("Your value has to be between 0 and 100");
       return;
     }
-    this.sliderValue = value;
-    const curveLengths = this.arr.map((elem, ind, arr) => {
-      return this.findCurveLength(arr, ind);
-    });
-    const Lin =
-      ((value - this.startValue) * this.totalCurveLength) /
-      (this.endValue - this.startValue);
-    const foundElem = this.arr[this.findNearesELemIndex(Lin, curveLengths)];
-
+    const Lin = (value * this.totalCurveLength) / 100;
+    const foundElem = this.arr[
+      this.findNearesELemIndex(Lin, this.curveLengths)
+    ];
     this.moveSliderHandle(foundElem.x, foundElem.y);
   }
 
@@ -243,13 +263,10 @@ export default class AnySliderClass {
         );
         return;
       }
-      const curveLengths = this.arr.map((elem, ind, arr) => {
-        return this.findCurveLength(arr, ind);
-      });
       const Lin =
         ((value - this.startValue) * this.totalCurveLength) /
         (this.endValue - this.startValue);
-      return this.arr[this.findNearesELemIndex(Lin, curveLengths)];
+      return this.arr[this.findNearesELemIndex(Lin, this.curveLengths)];
     });
   }
 
@@ -272,25 +289,49 @@ export default class AnySliderClass {
   }
   calulateDashCoords(elem, arr, r) {
     const elemIndex = arr.indexOf(elem);
-    const diff = elemIndex === arr.length - 1 ? 
-      (arr[elemIndex].y - arr[elemIndex - 1].y) /
-        (arr[elemIndex].x - arr[elemIndex - 1].x): 
-      (arr[elemIndex + 1].y - arr[elemIndex].y) /
-        (arr[elemIndex + 1].x - arr[elemIndex].x);
-    
+    const diff =
+      elemIndex === arr.length - 1
+        ? (arr[elemIndex].y - arr[elemIndex - 1].y) /
+          (arr[elemIndex].x - arr[elemIndex - 1].x)
+        : (arr[elemIndex + 1].y - arr[elemIndex].y) /
+          (arr[elemIndex + 1].x - arr[elemIndex].x);
+    // const diff2 =
+    //   (arr[elemIndex + 1].y - 2 * arr[elemIndex].y + arr[elemIndex - 1].y) /
+    //   Math.pow(arr[elemIndex + 1].x - arr[elemIndex].x, 2);
+
     const alpha = Math.atan(diff);
 
     // Чтобы все всегда было с одной стороны кривой:
-    console.log('diff: ',diff);
-    console.log('alpha: ', alpha * 180 / Math.PI);
-    
-    // const fiAdd = diff < 0 ? Math.PI : 0;
+    console.log("diff: ", diff);
+    // console.log("diff2: ", diff2);
+    // console.log("alpha: ", (alpha * 180) / Math.PI);
+
     const fiAdd = 0;
+    // const fiAdd = diff2 > 0 ? Math.PI : 0;
 
     return {
-      x: elem.x + r * Math.cos(fiAdd + Math.PI / 2 + alpha),
-      y: elem.y + r * Math.sin(fiAdd + Math.PI / 2 + alpha)
+      x: elem.x - 10,
+      y: elem.y - (1 / diff) * (elem.x - 10 - elem.x)
     };
+    // const condition = () => {
+    //   const { y } = arr[0];
+    //   const { y: tY } = elem;
+    //   console.log({ tY, y });
+    //   return y < tY;
+    // };
+    // return condition()
+    //   ? {
+    //       x: elem.x + r * Math.cos(fiAdd + Math.PI / 2 + alpha),
+    //       y: elem.y + r * Math.sin(fiAdd + Math.PI / 2 + alpha)
+    //     }
+    //   : {
+    //       x: elem.x - r * Math.cos(fiAdd + Math.PI / 2 + alpha),
+    //       y: elem.y - r * Math.sin(fiAdd + Math.PI / 2 + alpha)
+    //     };
+    // return {
+    //   x: elem.x + r * Math.cos(fiAdd + Math.PI / 2 + alpha),
+    //   y: elem.y + r * Math.sin(fiAdd + Math.PI / 2 + alpha)
+    // };
   }
 
   init(elem, param) {
@@ -302,22 +343,30 @@ export default class AnySliderClass {
     this.currentElemIndex = 0;
 
     // Обработка входных параметров
-    this.transitionTime = param.transition && param.transition.t
-      ? param.transition.t
-      : defaultTransitionTime;
+    this.transitionTime =
+      param.transition && param.transition.t
+        ? param.transition.t
+        : defaultTransitionTime;
     this.startValue = param.values ? param.values.from : null;
     this.endValue = param.values ? param.values.to : null;
     this.referenceValues = param.referenceValues
       ? param.referenceValues.values
       : null;
     this.isVisible =
-    param.render && param.render.visible !== undefined ? param.render.visible : true;
-    this.lineColor = param.render && param.render.color ? param.render.color : "#000000";
-    this.lineWidth = param.render && param.render.width ? param.render.width : 4;
+      param.render && param.render.visible !== undefined
+        ? param.render.visible
+        : true;
+    this.lineColor =
+      param.render && param.render.color ? param.render.color : "#000000";
+    this.lineWidth =
+      param.render && param.render.width ? param.render.width : 4;
 
     this.elem = elem;
     this.arr = this.checkInput(param);
     this.arr = this.shiftInputArray(this.arr);
+    this.curveLengths = this.arr.map((elem, ind, arr) => {
+      return this.findCurveLength(arr, ind);
+    });
 
     this.canvasWidth = Math.max(...this.arr.map(elem => elem.x)) + 50;
     this.canvasHeight = Math.max(...this.arr.map(elem => elem.y)) + 50;
