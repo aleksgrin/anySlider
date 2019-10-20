@@ -9,48 +9,61 @@ const fi2 = 200 * Math.PI;
 const w = 1 / 50;
 const N = 100;
 
-const arr = anySlider.createArrayH(fi1, fi2, 1).map(elem => {
-  let xAbs = elem;
-  let yAbs = A * Math.sin(w * elem);
-  return { x: xAbs, y: yAbs };
-});
-const options = {
-  // arr: arr,
-  type: {
-    curve: "spiral",
-    fi1: 60,
-    fi2: 320,
-    r1: 80,
-    r2: 200
-  },
-  values: {
-    from: 0,
-    to: 300
-  },
-  clickable: true,
-  transition: {
-    t: 0.4
-  },
-  referenceValues: {
-    // values: [25, 50, 75, 100, 150, 200, 250, 275]
-    values: anySlider.createArrayH(10, 300, 50)
-  },
-  render: {
-    visible: true,
-    color: "pink",
-    width: 6
-  }
-};
-
+// const arr = anySlider.createArrayH(fi1, fi2, 1).map(elem => {
+//   let xAbs = elem;
+//   let yAbs = A * Math.sin(w * elem);
+//   return { x: xAbs, y: yAbs };
+// // });
+// // const arr = [...anySlider.line(20, 100, 200, 100), ...anySlider.line(200, 100, 200, 300)];
+// const arr = anySlider.line(20, 100, 200, 100);
 // const options = {
 //   arr: arr,
 //   type: {
-//     curve: "arc",
-//     r: 250,
-//     fi1: 90,
-//     fi2: 270
-//   }
+//     curve: "spiral",
+//     fi1: 60,
+//     fi2: 320,
+//     r1: 80,
+//     r2: 200
+//   },
+//   values: {
+//     from: 0,
+//     to: 300
+//   },
+//   clickable: true,
+//   transition: {
+//     t: 0.4
+//   },
+//   // referenceValues: {
+//   //   // values: [25, 50, 75, 100, 150, 200, 250, 275]
+//   //   values: anySlider.createArrayH(10, 300, 50)
+//   // },
+//   // render: {
+//   //   visible: true,
+//   //   color: "pink",
+//   //   width: 6
+//   // }
 // };
+
+// const arr = [
+//   ...anySlider.line(20, 100, 200, 100),
+//   ...anySlider.line(200, 100, 200, 300),
+//   ...anySlider.line(200, 300, 20, 100)
+// ];
+const arr = [
+  ...anySlider.line(20, 100, 200, 100),
+  ...anySlider.arc(100, 180, 0, 300, 100),
+  ...anySlider.line(400, 100, 500, 100),
+];
+// const arr = anySlider.line(200, 300, 20, 100);
+const options = {
+  arr: arr,
+  type: {
+    curve: "arc",
+    r: 250,
+    fi1: 90,
+    fi2: 270
+  }
+};
 
 anySlider.init(slider, options);
 // anySlider.listen("start", () => {

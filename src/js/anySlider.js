@@ -151,6 +151,35 @@ export default class AnySliderClass {
     }
   }
 
+  line(x1,y1,x2,y2) {
+    let xArr;
+    let yArr;
+    let determineH = (x1, x2) => x2 < x1 ? -1 : 1;
+    if (Math.abs(x2-x1) > Math.abs(y2-y1)) {
+      xArr = this.createArrayH(x1, x2, determineH(x1, x2));
+      yArr = this.createArray(y1, y2, xArr.length-1);
+    } else if (Math.abs(x2-x1) < Math.abs(y2-y1)) {
+      yArr = this.createArrayH(y1, y2, determineH(y1, y2));
+      xArr = this.createArray(x1, x2, yArr.length-1);
+    }
+    return xArr.map((elem, index) => {
+      let xAbs = elem;
+      let yAbs = yArr[index];
+      return { x: xAbs, y: yAbs };
+    });
+  }
+  arc(r, fi1, fi2, xc = 0, yc = 0) {
+    let dfi = (2 * Math.asin(1 / r / Math.sqrt(2)) * 180) / Math.PI;
+    dfi = fi2 > fi1 ? dfi : -dfi;
+    return this.createArrayH(fi1, fi2, dfi)
+      .map(elem => (elem * Math.PI) / 180)
+      .map(elem => {
+        let xAbs = xc + r * Math.cos(elem);
+        let yAbs = yc + r * Math.sin(elem);
+        return { x: xAbs, y: yAbs };
+      });
+  }
+
   calculateValue(start, end, currL, L) {
     return parseInt(((end - start) * currL) / L + start);
   }
