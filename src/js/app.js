@@ -44,16 +44,16 @@ const N = 100;
 //   // }
 // };
 
-// const arr = [
-//   ...anySlider.line(20, 100, 200, 100),
-//   ...anySlider.line(200, 100, 200, 300),
-//   ...anySlider.line(200, 300, 20, 100)
-// ];
 const arr = [
   ...anySlider.line(20, 100, 200, 100),
-  ...anySlider.arc(100, 180, 0, 300, 100),
-  ...anySlider.line(400, 100, 500, 100),
+  ...anySlider.line(200, 100, 200, 300),
+  ...anySlider.line(200, 300, 20, 100)
 ];
+// const arr = [
+//   ...anySlider.line(20, 100, 200, 100),
+//   ...anySlider.arc(100, 180, 0, 300, 100),
+//   ...anySlider.line(400, 100, 500, 100),
+// ];
 // const arr = anySlider.line(200, 300, 20, 100);
 const options = {
   arr: arr,

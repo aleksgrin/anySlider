@@ -24,7 +24,7 @@ const options = {
   arr: yourArr
 };
 ```
-Where your arr should have the following structure:
+Where your array should have the following structure:
 ```js 
 const arr = [{x: 10, y: 10}, {x: 20, y: 20}, ...]
 ```
@@ -48,6 +48,30 @@ const myArr = anySlider.createArrayH(fi1, fi2, 1).map(elem => {
 Ass you've noticed to create array with the given step you can use a slider method ```createArrayH(x1, x2, h)```.
 Or you can use ```createArray(x1, x2, N)``` to create array with the given number of points.
 
+### Some other ways to create a curve
+To create a curve you need you even may use methods:
+- anySlider.line(x1,y1,x2,y2) - creates a line whith 1 px step
+- anySlider.arc(r, fi1, fi2, xc, yc) - creates an arc. By default xc, yc - coordinates of an arc center is set to 0
+
+For exaple there is a triangle slider:
+```js
+const arr = [
+  ...anySlider.line(20, 100, 200, 100),
+  ...anySlider.line(200, 100, 200, 300),
+  ...anySlider.line(200, 300, 20, 100)
+];
+```
+![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/4.jpg)
+
+And others...:
+```js
+const arr = [
+  ...anySlider.line(20, 100, 200, 100),
+  ...anySlider.arc(100, 180, 0, 300, 100),
+  ...anySlider.line(400, 100, 500, 100),
+];
+```
+![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/3.jpg)
 Note, that if the arr property is given than the type property is ignored.
 ## Custom events
 To use events one should use a method ```listen('eventType', callback)```:
