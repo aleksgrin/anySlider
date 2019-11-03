@@ -22,39 +22,32 @@ export default class AnySliderClass {
       canvas.width = this.canvasWidth;
       canvas.height = this.canvasHeight;
       const ctx = canvas.getContext("2d");
+
+      ctx.beginPath();
       ctx.fillStyle = this.lineColor;
+      ctx.lineWidth = 0;
       arr.forEach(elem => {
         ctx.moveTo(elem.x + dotRadius / 2, elem.y + dotRadius / 2);
         ctx.arc(elem.x, elem.y, dotRadius, 0, 2 * Math.PI);
       });
+      ctx.fill();
       if (this.referenceValuesArray) {
+        ctx.beginPath();
+        ctx.lineWidth = this.dashWidth;
+        ctx.strokeStyle = this.dashColor;
         this.referenceValuesArray.forEach((referenceElem, i) => {
           const myElem = this.findNearest(
             referenceElem.x,
             referenceElem.y,
             arr
           );
-          const dashStart = this.calulateDashCoords(myElem, arr, 20);
-
-          // const dashEnd = this.calulateDashCoords(myElem, arr, 0);
+          const dashStart = this.calulateDashCoords(myElem, arr, this.dashHeight / 2);
+          const dashEnd = this.calulateDashCoords(myElem, arr, -this.dashHeight / 2);
           ctx.moveTo(dashStart.x, dashStart.y);
-          ctx.lineTo(myElem.x, myElem.y);
-          ctx.stroke();
-
-          // ctx.moveTo(
-          //   referenceElem.x + (dotRadius * 2) / 2,
-          //   referenceElem.y + (dotRadius * 2) / 2
-          // );
-          // ctx.arc(
-          //   referenceElem.x,
-          //   referenceElem.y,
-          //   dotRadius * 4,
-          //   0,
-          //   2 * Math.PI
-          // );
+          ctx.lineTo(dashEnd.x, dashEnd.y);
         });
+        ctx.stroke();
       }
-      ctx.fill();
     }
   }
 
@@ -338,10 +331,10 @@ export default class AnySliderClass {
     const fiAdd = 0;
     // const fiAdd = diff2 > 0 ? Math.PI : 0;
 
-    return {
-      x: elem.x - 10,
-      y: elem.y - (1 / diff) * (elem.x - 10 - elem.x)
-    };
+    // return {
+    //   x: elem.x - 10,
+    //   y: elem.y - (1 / diff) * (elem.x - 10 - elem.x)
+    // };
     // const condition = () => {
     //   const { y } = arr[0];
     //   const { y: tY } = elem;
@@ -357,10 +350,10 @@ export default class AnySliderClass {
     //       x: elem.x - r * Math.cos(fiAdd + Math.PI / 2 + alpha),
     //       y: elem.y - r * Math.sin(fiAdd + Math.PI / 2 + alpha)
     //     };
-    // return {
-    //   x: elem.x + r * Math.cos(fiAdd + Math.PI / 2 + alpha),
-    //   y: elem.y + r * Math.sin(fiAdd + Math.PI / 2 + alpha)
-    // };
+    return {
+      x: elem.x + r * Math.cos(fiAdd + Math.PI / 2 + alpha),
+      y: elem.y + r * Math.sin(fiAdd + Math.PI / 2 + alpha)
+    };
   }
 
   init(elem, param) {
@@ -389,6 +382,12 @@ export default class AnySliderClass {
       param.render && param.render.color ? param.render.color : "#000000";
     this.lineWidth =
       param.render && param.render.width ? param.render.width : 4;
+    this.dashColor =
+      param.render && param.render.dashColor ? param.render.dashColor : "black";
+    this.dashWidth =
+      param.render && param.render.dashWidth ? param.render.dashWidth : 4;
+    this.dashHeight =
+      param.render && param.render.dashHeight ? param.render.dashHeight : 40;
 
     this.elem = elem;
     this.arr = this.checkInput(param);
@@ -442,7 +441,7 @@ export default class AnySliderClass {
           this.sliderValue = this.getPersentage();
         }
       };
-      document.addEventListener("click", onSliderClick);
+      this.sliderElem.addEventListener("click", onSliderClick);
     }
 
     let onMouseDown = evt => {

@@ -94,8 +94,8 @@ is the begining of a curve and 100 is its' end. Else return value is current sli
 ```anyslider.getPers()``` - returns a value from 0 to 100. Where 0 is the begining of a curve and 100 is its' end.
 ```anyslider.set()``` - sets slider value to input value that has to be from 0 to 100 if values property in options object is not added or a value from values property interval
 ```anyslider.setPers()``` - sets value in persentage from 0 to 100
-## Примеры формирования объекта options
-Для кругового слайдера необходимо задать только один параметр: радиус окружности
+## Some exples of usage options object
+Creating a round slider:
 ```js
 const options = {
   type: {
@@ -104,8 +104,7 @@ const options = {
   }
 }
 ```
-Для спирального слайдера необходимо задать: начальные и конечные углы и радиусы
-
+Creating a spiral slider:
 ```js
 const options = {
   type: {
@@ -117,6 +116,7 @@ const options = {
   }
 }
 ```
+Creating a line:
 ```js
 const options = {
   type: {
@@ -129,17 +129,16 @@ const options = {
 }
 ```
 
-Чтобы зарпетить перед по клику можно добавить поле clickable со знаечние false:
-
+To prevent click behavior use clickable field with the false value:
 ```js
 const options = {
   ...
   clickable: false,
 }
 ```
-Можно дать длительность передвижения к точке при клике следующим образом
-(где t - время перехода в секундах).
-Если не задавать время перехода, то по умолчанию оно равно 0.8s
+You can set the time slider handle will go to the point when you click on a slider:
+(where t - time in seconds).
+If no setted the defaults one is 0.8s
 ```js
 const options = {
   ...
@@ -149,6 +148,53 @@ const options = {
 }
 ```
 
+## Values and reference values on a slider
+You can add values like that:
+
+```js
+  values: {
+    from: 0,
+    to: 300
+  },
+```
+When you've spot a values property you can use reference values that should not go beyond values from values proprty:
+
+```js
+  referenceValues: {
+    values: [50, 100, 150, 200, 250]
+  },
+```
+Then you will see something like that:
+
+![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/5.jpg)
+
+Now you can use a ```anySlider.get()``` and ```anySlider.set()``` methods and it will return/set values that you've determined. Remember, that if you do not use values property in your object theese method will return the persentage of passed curve. You can use more evident one: ```anySlider.getPers()``` and ```anySlider.setPers()``` to not been confused.
+
+## Rendering slider and customizing its look
+If you do not want to see the slider points you can use option object with the render property:
+```js
+render: {
+  visible: false,
+}
+```
+At this point you will see only slider handle that is following the curve you have set.
+This behavior may be helpfull when you already have a slider picture and it is quite complicated. So you can use visible points to make a curve look like your pic and then just turn it off.
+
+Since i use a canvas to render points it is no possible to use css to customize color, width and other propertyes of a curve you may use the following:
+```js
+render: {
+    ...
+    color: "pink", // sets the dots color
+    width: 6,  // set the dots width
+    dashColor: "blue", // sets the lines color when you use reference values
+    dashWidth: 2,
+    dashHeight: 50,
+  }
+```
+
+As a result:
+![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/6.jpg)
+
+
 TODO: 
-- []: Нарисовать свой слайдер
 - []: Значения и штрихи на кривой

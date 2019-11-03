@@ -56,12 +56,27 @@ const arr = [
 // ];
 // const arr = anySlider.line(200, 300, 20, 100);
 const options = {
-  arr: arr,
+  // arr: arr,
   type: {
     curve: "arc",
     r: 250,
     fi1: 90,
     fi2: 270
+  },
+  values: {
+    from: 0,
+    to: 300
+  },
+  referenceValues: {
+    values: [50, 100, 150, 200, 250]
+  },
+    render: {
+    visible: true,
+    color: "pink",
+    width: 6,
+    dashColor: "blue",
+    dashWidth: 2,
+    dashHeight: 50,
   }
 };
 
