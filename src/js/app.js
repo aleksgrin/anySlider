@@ -68,7 +68,7 @@ const options = {
     to: 300
   },
   referenceValues: {
-    values: [50, 100, 150, 200, 250]
+    values: [50, 250]
   },
     render: {
     visible: true,
@@ -77,7 +77,13 @@ const options = {
     dashColor: "blue",
     dashWidth: 2,
     dashHeight: 50,
-  }
+  },
+  transition: {
+    t: 500,
+    timingFunction: (timeFraction) => {
+      return Math.pow(timeFraction, 2);
+    }
+  },
 };
 
 anySlider.init(slider, options);

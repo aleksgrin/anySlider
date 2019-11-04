@@ -136,17 +136,31 @@ const options = {
   clickable: false,
 }
 ```
-You can set the time slider handle will go to the point when you click on a slider:
+You can set the time slider handle will spend to go to the point when you click on a slider:
 (where t - time in seconds).
-If no setted the defaults one is 0.8s
+If no setted the defaults one is 800ms
 ```js
 const options = {
   ...
   transition: {
-    t: 2
+    t: 2000
   },
 }
 ```
+You can even customize timeFunction (see https://learn.javascript.ru/js-animation): 
+```js
+const options = {
+  ...
+  transition: {
+    ...
+    timingFunction: (timeFraction) => {
+      return Math.pow(timeFraction, 2);
+    }
+  },
+}
+```
+By default this function is linear.
+
 
 ## Values and reference values on a slider
 You can add values like that:

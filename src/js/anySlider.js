@@ -35,7 +35,7 @@ export default class AnySliderClass {
         ctx.beginPath();
         ctx.lineWidth = this.dashWidth;
         ctx.strokeStyle = this.dashColor;
-        this.referenceValuesArray.forEach((referenceElem, i) => {
+        this.referenceValuesArray.forEach((referenceElem) => {
           const myElem = this.findNearest(
             referenceElem.x,
             referenceElem.y,
@@ -190,6 +190,7 @@ export default class AnySliderClass {
     const foundElemIndex = values.indexOf(Math.min(...values));
     return foundElemIndex;
   }
+
   set(value) {
     if (this.startValue && this.endValue) {
       if (value > this.endValue || value < this.startValue) {
@@ -242,33 +243,42 @@ export default class AnySliderClass {
 
   to(elem) {
     const currInd = this.currentElemIndex;
-    // const targInd = this.targetElemIndex;
     const targInd = this.arr.indexOf(elem);
-    const N = Math.abs(targInd - currInd);
-    const deltaT = (this.transitionTime * 1000) / N;
+    const slider = this;
 
-    // const t = 3;
-    // const v = N / t;
-    // const tArr = this.createArray(0, t, N);
-    // const vArr = this.createArray(v, v, N);
-    // const sArr = vArr.map((elem, i) => {
-    //   return Math.round(elem * tArr[i]);
-    // });
+    function animate({timing, draw, duration}) {
 
-    let i = currInd;
-    let moveTimeout = () => {
-      setTimeout(() => {
-        this.moveSliderHandle(this.arr[i].x, this.arr[i].y);
-
-        i = targInd < currInd ? --i : ++i;
-        if (i < targInd + 1 && targInd > currInd) {
-          moveTimeout();
-        } else if (i > targInd - 1 && targInd < currInd) {
-          moveTimeout();
+      let start = performance.now();
+    
+      requestAnimationFrame(function animate(time) {
+        let timeFraction = (time - start) / duration;
+        if (timeFraction > 1) timeFraction = 1;
+    
+        let progress = timing(timeFraction);
+    
+        draw(progress);
+    
+        if (timeFraction < 1) {
+          requestAnimationFrame(animate);
         }
-      }, deltaT);
-    };
-    moveTimeout();
+    
+      });
+    }
+
+    animate({
+      duration: this.transitionTime,
+      timing: slider.timingFunction,
+      draw(progress) {
+        let i = Math.floor((targInd - currInd) * progress + currInd);
+        if (i >= slider.arr.length) {
+          i = slider.arr.length - 1;
+        } 
+        if (i < 0) {
+          i = 0;
+        }
+        slider.moveSliderHandle(slider.arr[i].x, slider.arr[i].y);
+      }
+    });
     this.currentElemIndex = targInd;
   }
 
@@ -358,7 +368,10 @@ export default class AnySliderClass {
 
   init(elem, param) {
     // Константы
-    const defaultTransitionTime = 0.8;
+    const defaultTransitionTime = 800;
+    const defaultTimingFunction = (timeFraction) => {
+      return timeFraction;
+    }
     const cutoffInd = 30;
 
     // Начальные значения
@@ -369,6 +382,11 @@ export default class AnySliderClass {
       param.transition && param.transition.t
         ? param.transition.t
         : defaultTransitionTime;
+    this.timingFunction =
+      param.transition && param.transition.timingFunction
+        ? param.transition.timingFunction
+        : defaultTimingFunction;
+
     this.startValue = param.values ? param.values.from : null;
     this.endValue = param.values ? param.values.to : null;
     this.referenceValues = param.referenceValues
