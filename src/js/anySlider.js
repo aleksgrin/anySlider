@@ -85,6 +85,7 @@ export default class AnySliderClass {
   }
 
   findNearest(x, y, arr) {
+    // Нахожит ближайшую точку в масиве к переданной
     const dists = arr.map(elem => {
       return Math.sqrt(Math.pow(elem.x - x, 2) + Math.pow(elem.y - y, 2));
     });
@@ -192,7 +193,7 @@ export default class AnySliderClass {
   }
 
   set(value) {
-    if (this.startValue && this.endValue) {
+    if (this.startValue !== null && this.endValue !== null) {
       if (value > this.endValue || value < this.startValue) {
         console.warn(
           "Your value is out of your start or end values or you forgot to provied one"
@@ -203,9 +204,11 @@ export default class AnySliderClass {
       const Lin =
         ((value - this.startValue) * this.totalCurveLength) /
         (this.endValue - this.startValue);
+      const foundIndex = this.findNearesELemIndex(Lin, this.curveLengths);
       const foundElem = this.arr[
         this.findNearesELemIndex(Lin, this.curveLengths)
       ];
+      this.currentElemIndex = foundIndex;
 
       this.moveSliderHandle(foundElem.x, foundElem.y);
     } else {
@@ -215,13 +218,13 @@ export default class AnySliderClass {
 
   setPers(value) {
     if (value > 100 || value < 0) {
-      console.warn("Your value has to be between 0 and 100");
+      console.warn("Your value is a persent of a curve so it has to be between 0 and 100");
       return;
     }
     const Lin = (value * this.totalCurveLength) / 100;
-    const foundElem = this.arr[
-      this.findNearesELemIndex(Lin, this.curveLengths)
-    ];
+    const foundIndex = this.findNearesELemIndex(Lin, this.curveLengths);
+    const foundElem = this.arr[foundIndex];
+    this.currentElemIndex = foundIndex;
     this.moveSliderHandle(foundElem.x, foundElem.y);
   }
 
@@ -287,6 +290,20 @@ export default class AnySliderClass {
     this.sliderHandle.style.top = y - this.sliderHandle.offsetHeight / 2 + "px";
   }
 
+  moveSliderHandleToNearestRef(x, y) {
+    const foundReferenceElem = this.findNearest(
+      this.foundElem.x,
+      this.foundElem.y,
+      this.referenceValuesArray
+    );
+    this.foundElem = this.findNearest(
+      foundReferenceElem.x,
+      foundReferenceElem.y,
+      this.arr
+    );
+    this.to(this.foundElem);
+  }
+
   handleReferenceValues() {
     return this.referenceValues.map(value => {
       if (value > this.endValue || value < this.startValue) {
@@ -333,33 +350,9 @@ export default class AnySliderClass {
 
     const alpha = Math.atan(diff);
 
-    // Чтобы все всегда было с одной стороны кривой:
-    console.log("diff: ", diff);
-    // console.log("diff2: ", diff2);
-    // console.log("alpha: ", (alpha * 180) / Math.PI);
-
     const fiAdd = 0;
     // const fiAdd = diff2 > 0 ? Math.PI : 0;
 
-    // return {
-    //   x: elem.x - 10,
-    //   y: elem.y - (1 / diff) * (elem.x - 10 - elem.x)
-    // };
-    // const condition = () => {
-    //   const { y } = arr[0];
-    //   const { y: tY } = elem;
-    //   console.log({ tY, y });
-    //   return y < tY;
-    // };
-    // return condition()
-    //   ? {
-    //       x: elem.x + r * Math.cos(fiAdd + Math.PI / 2 + alpha),
-    //       y: elem.y + r * Math.sin(fiAdd + Math.PI / 2 + alpha)
-    //     }
-    //   : {
-    //       x: elem.x - r * Math.cos(fiAdd + Math.PI / 2 + alpha),
-    //       y: elem.y - r * Math.sin(fiAdd + Math.PI / 2 + alpha)
-    //     };
     return {
       x: elem.x + r * Math.cos(fiAdd + Math.PI / 2 + alpha),
       y: elem.y + r * Math.sin(fiAdd + Math.PI / 2 + alpha)
@@ -389,6 +382,9 @@ export default class AnySliderClass {
 
     this.startValue = param.values ? param.values.from : null;
     this.endValue = param.values ? param.values.to : null;
+
+    this.behavor = param.behavior ? param.behavior : null;
+    
     this.referenceValues = param.referenceValues
       ? param.referenceValues.values
       : null;
@@ -396,6 +392,7 @@ export default class AnySliderClass {
       param.render && param.render.visible !== undefined
         ? param.render.visible
         : true;
+    this.closed = param.type.closed ? param.type.closed : null;
     this.lineColor =
       param.render && param.render.color ? param.render.color : "#000000";
     this.lineWidth =
@@ -432,7 +429,7 @@ export default class AnySliderClass {
       return evt.targetTouches ? evt.targetTouches[0] : evt;
     };
 
-    if (param.clickable !== false && !param.referenceValues) {
+    if (param.clickable !== false) {
       let onSliderClick = evt => {
         if (this.clickEvent) this.elem.dispatchEvent(this.clickEvent);
 
@@ -441,10 +438,27 @@ export default class AnySliderClass {
           x: getCoordsStorage(evt).clientX - sliderLeft,
           y: getCoordsStorage(evt).clientY - sliderTop
         };
+        
         this.foundElem = this.findNearest(coords.x, coords.y, this.arr);
-        this.foundElemIndex = this.arr.indexOf(this.foundElem);
-        this.targetElemIndex = this.foundElemIndex;
-        this.to(this.foundElem);
+        if(param.referenceValues) {
+          const foundReferenceElem = this.findNearest(
+            this.foundElem.x,
+            this.foundElem.y,
+            this.referenceValuesArray
+          );
+          this.foundElem = this.findNearest(
+            foundReferenceElem.x,
+            foundReferenceElem.y,
+            this.arr
+          );
+          this.foundElemIndex = this.arr.indexOf(this.foundElem);
+          this.targetElemIndex = this.foundElemIndex;
+          this.moveSliderHandleToNearestRef()
+        } else {
+          this.foundElemIndex = this.arr.indexOf(this.foundElem);
+          this.targetElemIndex = this.foundElemIndex;
+          this.to(this.foundElem);
+        }
 
         this.currentElemIndex = this.foundElemIndex;
         this.currL = this.findCurveLength(this.arr, this.foundElemIndex);
@@ -476,11 +490,19 @@ export default class AnySliderClass {
         moveEvt.preventDefault();
 
         if (this.moveEvent) document.dispatchEvent(this.moveEvent);
-
+        
         this.foundElem = this.findNearest(coords.x, coords.y, this.arr);
         this.foundElemIndex = this.arr.indexOf(this.foundElem);
+        this.currElem = this.arr[this.currentElemIndex]
 
-        if (Math.abs(this.foundElemIndex - this.currentElemIndex) < cutoffInd) {
+        const isClosedCurve = () => {
+          return this.closed && 
+            (this.currentElemIndex >= this.arr.length - cutoffInd && 
+              this.foundElemIndex < cutoffInd) || 
+            (this.currentElemIndex < cutoffInd && this.foundElemIndex > this.arr.length - cutoffInd)
+        } 
+
+        if (Math.abs(this.foundElemIndex - this.currentElemIndex) < cutoffInd || isClosedCurve()) {
           this.currentElemIndex = this.foundElemIndex;
           this.moveSliderHandle(this.foundElem.x, this.foundElem.y);
         }

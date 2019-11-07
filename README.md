@@ -209,6 +209,12 @@ render: {
 As a result:
 ![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/6.jpg)
 
+## Some examples
+### Change an image depending on a slider value
 
 TODO: 
 - []: Значения и штрихи на кривой
+- []: Toggle
+- []: Добавить функцию обновления параметров
+- []: ?Перенести инициализацию в конструктор?
+

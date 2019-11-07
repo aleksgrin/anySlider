@@ -60,17 +60,19 @@ const options = {
   type: {
     curve: "arc",
     r: 250,
-    fi1: 90,
-    fi2: 270
+    fi1: 0,
+    fi2: 360,
+    closed: true
   },
+  behavior: 'toggle',
   values: {
     from: 0,
     to: 300
   },
   referenceValues: {
-    values: [50, 250]
+    values: [0, 50, 100, 150, 200, 250]
   },
-    render: {
+  render: {
     visible: true,
     color: "pink",
     width: 6,
@@ -78,6 +80,7 @@ const options = {
     dashWidth: 2,
     dashHeight: 50,
   },
+  clickable: true,
   transition: {
     t: 500,
     timingFunction: (timeFraction) => {
@@ -87,6 +90,7 @@ const options = {
 };
 
 anySlider.init(slider, options);
+// anySlider.set(200)
 // anySlider.listen("start", () => {
 //   console.log("You started!");
 // });
