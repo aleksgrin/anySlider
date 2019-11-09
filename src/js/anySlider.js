@@ -384,6 +384,7 @@ export default class AnySliderClass {
     this.endValue = param.values ? param.values.to : null;
 
     this.behavor = param.behavior ? param.behavior : null;
+    this.isToggle = this.behavor && this.behavor.toggle === true ? this.behavor.toggle : null;
     
     this.referenceValues = param.referenceValues
       ? param.referenceValues.values

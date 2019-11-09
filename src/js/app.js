@@ -64,7 +64,9 @@ const options = {
     fi2: 360,
     closed: true
   },
-  behavior: 'toggle',
+  behavior: {
+    toggle: true
+  },
   values: {
     from: 0,
     to: 300
