@@ -1,19 +1,28 @@
 {
   "name": "anySlider",
   "version": "1.0.0",
-  "description": "",
-  "main": "webpack.config.js",
+  "description": "Easyly create slider with any form you want",
+  "main": "build/build.js",
+  "bin": {
+    "anySlider": "build/build.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --inline --hot",
-    "build": "webpack --watch"
+    "build": "webpack --watch",
+    "buildProd": "set NODE_ENV=production && webpack && node scripts/build.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aleksgrin/anySlider.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "slider",
+    "circle slider",
+    "custom slider",
+    "draw slider"
+  ],
+  "author": "Alex Grinevich",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/aleksgrin/anySlider/issues"
@@ -21,11 +30,12 @@
   "homepage": "https://github.com/aleksgrin/anySlider#readme",
   "dependencies": {},
   "devDependencies": {
-    "webpack-cli": "^3.3.9",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
+    "fs-extra": "^8.1.0",
     "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.9",
     "webpack-dev-server": "^3.8.1",
     "webpack-node-externals": "^1.7.2"
   }

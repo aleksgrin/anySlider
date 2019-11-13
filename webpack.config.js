@@ -1,28 +1,29 @@
 "use strict";
 
 var path = require("path");
-// const webpack = require("webpack");
-// const nodeExternals = require("webpack-node-externals");
+
+const isDevelopment =
+  !process.env.NODE_ENV || process.env.NODE_ENV.trim() == "development";
+console.log(isDevelopment);
 
 module.exports = {
   target: "node",
-  // externals: [nodeExternals()],
-  entry: "./src/js/app",
-  output: {
-    path: path.join(__dirname, "build"),
-    // path: "./build/build.js",
-    filename: "build.js",
-    publicPath: "/build/"
-  },
-  // watch: true,
-  // watchOptions: {
-  //   aggregateTimeout: 100
-  // },
+  entry: isDevelopment ? "./index.js" : "./src/js/app",
+  output: isDevelopment
+    ? {
+        path: path.join(__dirname, "build"),
+        filename: "build.js",
+        publicPath: "/build/"
+      }
+    : {
+        path: path.join(__dirname, "bin"),
+        filename: "bin.js",
+        publicPath: "/bin/"
+      },
   devtool: "source-map",
-  // resolve: {
-  //   modulesDirectories: ['node_modules'],
-  //   extensions: ['','.js']
-  // },
+  optimization: {
+    minimize: false
+  },
   module: {
     rules: [
       {
