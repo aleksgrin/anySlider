@@ -17,6 +17,9 @@ anySlider.init(slider, options);
 To see more availible curve types (such as circle, lines, or even spiral) and their parameters follow appropriate section.
 After you run this code you will see:
 ![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/1.jpg)
+
+## Use css to customize slider handle
+To style your handle you can just use ```.slider_handle``` class in css
 ## Other ways to customize curve type
 To add your own curve you just need to add an 'arr' property to options object:
 ```js

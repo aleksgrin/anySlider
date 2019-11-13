@@ -1,10 +1,10 @@
 {
-  "name": "anySlider",
+  "name": "any-slider",
   "version": "1.0.0",
   "description": "Easyly create slider with any form you want",
-  "main": "build/build.js",
+  "main": "bin/bin.js",
   "bin": {
-    "anySlider": "build/build.js"
+    "anySlider": "bin/bin.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
