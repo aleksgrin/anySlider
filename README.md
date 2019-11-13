@@ -1,3 +1,6 @@
+## Some tips
+ - pure js with no side libraries
+ - custom slider curve as you want
 ## The basic usage
 To init a slider you just need to have a slider elem inside your HTML, all other work will be done for you.
 To customize the slider type one should use the options object with the folowing structure:
