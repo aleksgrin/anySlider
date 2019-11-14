@@ -1,7 +1,7 @@
 {
-  "name": "any-slider",
+  "name": "imagine-slider",
   "version": "1.0.0",
-  "description": "Easyly create slider with any form you want",
+  "description": "Easyly create slider with almost any form you want",
   "main": "bin/bin.js",
   "bin": {
     "anySlider": "bin/bin.js"

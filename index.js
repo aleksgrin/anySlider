@@ -64,6 +64,7 @@ const options = {
     fi2: 360,
     closed: true
   },
+  sliderHandle: "custom",
   behavior: {
     toggle: true
   },

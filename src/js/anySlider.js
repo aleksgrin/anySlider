@@ -12,8 +12,12 @@ export default class AnySlider {
   }
 
   render(elem, arr) {
+    const defaultLook =
+      "border-radius: 50%; background-color: #000000; width: 60px; height: 60px;";
     elem.innerHTML = `
-      <div class="slider_handle"></div>
+      <div class="slider_handle" style="position: absolute; ${
+        this.customHandle ? "" : defaultLook
+      }"></div>
       ${this.isVisible ? "<canvas id='canvas'></canvas>" : ""}
     `;
     if (this.isVisible) {
@@ -393,7 +397,10 @@ export default class AnySlider {
 
     this.behavor = param.behavior ? param.behavior : null;
     this.isToggle =
-      this.behavor && this.behavor.toggle === true ? this.behavor.toggle : null;
+      param.behavor && param.behavor.toggle === true
+        ? param.behavor.toggle
+        : null;
+    this.customHandle = param.sliderHandle === "custom" ? true : false;
 
     this.referenceValues = param.referenceValues
       ? param.referenceValues.values
@@ -509,7 +516,7 @@ export default class AnySlider {
           return (
             (this.closed &&
               this.currentElemIndex >= this.arr.length - cutoffInd &&
-                this.foundElemIndex < cutoffInd) ||
+              this.foundElemIndex < cutoffInd) ||
             (this.currentElemIndex < cutoffInd &&
               this.foundElemIndex > this.arr.length - cutoffInd)
           );
