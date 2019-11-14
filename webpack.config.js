@@ -17,7 +17,7 @@ module.exports = {
       }
     : {
         path: path.join(__dirname, "bin"),
-        filename: "bin.js",
+        filename: "imagineslider.js",
         publicPath: "/bin/"
       },
   devtool: "source-map",

@@ -1,11 +1,8 @@
 {
-  "name": "imagine-slider",
+  "name": "imagineslider",
   "version": "1.0.0",
   "description": "Easyly create slider with almost any form you want",
   "main": "bin/bin.js",
-  "bin": {
-    "anySlider": "bin/bin.js"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --inline --hot",

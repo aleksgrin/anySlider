@@ -400,7 +400,8 @@ export default class AnySlider {
       param.behavor && param.behavor.toggle === true
         ? param.behavor.toggle
         : null;
-    this.customHandle = param.sliderHandle === "custom" ? true : false;
+    this.customHandle =
+      param.sliderHandle && param.sliderHandle === "custom" ? true : false;
 
     this.referenceValues = param.referenceValues
       ? param.referenceValues.values
@@ -581,5 +582,3 @@ export default class AnySlider {
     this.sliderHandle.addEventListener("touchstart", onMouseDown);
   }
 }
-
-module.exports.AnySlider = AnySlider;

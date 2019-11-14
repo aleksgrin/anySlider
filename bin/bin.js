@@ -82,7 +82,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -90,7 +90,9 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(module) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AnySlider; });
+__webpack_require__.r(__webpack_exports__);
+
+// CONCATENATED MODULE: ./src/js/anySlider.js
 class AnySlider {
   constructor() {
     this.sliderValue = null;
@@ -105,8 +107,12 @@ class AnySlider {
   }
 
   render(elem, arr) {
+    const defaultLook =
+      "border-radius: 50%; background-color: #000000; width: 60px; height: 60px;";
     elem.innerHTML = `
-      <div class="slider_handle"></div>
+      <div class="slider_handle" style="position: absolute; ${
+        this.customHandle ? "" : defaultLook
+      }"></div>
       ${this.isVisible ? "<canvas id='canvas'></canvas>" : ""}
     `;
     if (this.isVisible) {
@@ -486,7 +492,11 @@ class AnySlider {
 
     this.behavor = param.behavior ? param.behavior : null;
     this.isToggle =
-      this.behavor && this.behavor.toggle === true ? this.behavor.toggle : null;
+      param.behavor && param.behavor.toggle === true
+        ? param.behavor.toggle
+        : null;
+    this.customHandle =
+      param.sliderHandle && param.sliderHandle === "custom" ? true : false;
 
     this.referenceValues = param.referenceValues
       ? param.referenceValues.values
@@ -602,7 +612,7 @@ class AnySlider {
           return (
             (this.closed &&
               this.currentElemIndex >= this.arr.length - cutoffInd &&
-                this.foundElemIndex < cutoffInd) ||
+              this.foundElemIndex < cutoffInd) ||
             (this.currentElemIndex < cutoffInd &&
               this.foundElemIndex > this.arr.length - cutoffInd)
           );
@@ -668,52 +678,11 @@ class AnySlider {
   }
 }
 
-module.exports.AnySlider = AnySlider;
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)(module)))
-
-/***/ }),
-/* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _anySlider__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(0);
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AnySlider", function() { return _anySlider__WEBPACK_IMPORTED_MODULE_0__["a"]; });
+// CONCATENATED MODULE: ./src/js/app.js
+/* concated harmony reexport AnySlider */__webpack_require__.d(__webpack_exports__, "AnySlider", function() { return AnySlider; });
 
 
 
-
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-module.exports = function(originalModule) {
-	if (!originalModule.webpackPolyfill) {
-		var module = Object.create(originalModule);
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		Object.defineProperty(module, "exports", {
-			enumerable: true
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
 
 
 /***/ })
