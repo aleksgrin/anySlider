@@ -1,3 +1,3 @@
-import { ImagineSlider } from "./imagineSlider";
+import ImagineSlider from "./imagineSlider";
 
-export { ImagineSlider };
+export default ImagineSlider;

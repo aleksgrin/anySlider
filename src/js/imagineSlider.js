@@ -592,5 +592,3 @@ if (typeof module != "undefined" && module.exports) {
 } else {
   window.ImagineSlider = ImagineSlider;
 }
-
-export { ImagineSlider };

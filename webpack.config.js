@@ -1,6 +1,6 @@
 "use strict";
 
-var path = require("path");
+const path = require("path");
 
 const isDevelopment =
   !process.env.NODE_ENV || process.env.NODE_ENV.trim() == "development";
