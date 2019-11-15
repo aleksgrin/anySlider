@@ -1,3 +1,3 @@
-import AnySlider from "./anySlider";
+import { ImagineSlider } from "./imagineSlider";
 
-export { AnySlider };
+export { ImagineSlider };

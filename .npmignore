@@ -1,0 +1,10 @@
+build
+css
+images
+scripts
+
+.git
+
+webpack.config.js
+index.js
+index.html

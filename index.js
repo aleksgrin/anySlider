@@ -1,6 +1,6 @@
-import { AnySlider } from "./src/js/app.js";
+import { ImagineSlider } from "./src/js/app.js";
 
-window.anySlider = new AnySlider();
+window.anySlider = new ImagineSlider();
 const slider = document.querySelector(".slider");
 const input = document.querySelector(".input");
 const A = 60;

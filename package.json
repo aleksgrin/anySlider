@@ -2,12 +2,12 @@
   "name": "imagineslider",
   "version": "1.0.0",
   "description": "Easyly create slider with almost any form you want",
-  "main": "bin/bin.js",
+  "main": "distribute/imagineslider.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --inline --hot",
     "build": "webpack --watch",
-    "buildProd": "set NODE_ENV=production && webpack && node scripts/build.js"
+    "buildProd": "set NODE_ENV=production && webpack"
   },
   "repository": {
     "type": "git",

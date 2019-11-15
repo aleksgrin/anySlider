@@ -16,11 +16,11 @@ module.exports = {
         publicPath: "/build/"
       }
     : {
-        path: path.join(__dirname, "bin"),
+        path: path.join(__dirname, "distribute"),
         filename: "imagineslider.js",
-        publicPath: "/bin/"
+        publicPath: "/distribute/"
       },
-  devtool: "source-map",
+  devtool: isDevelopment ? "source-map" : "",
   optimization: {
     minimize: false
   },
