@@ -5,7 +5,7 @@
 To init a slider you just need to have a slider elem inside your HTML, all other work will be done for you.
 To customize the slider type one should use the options object with the folowing structure:
 ```js
-const anySlider = new AnySlider();
+const imagineSlider = new ImagineSlider();
 const slider = document.querySelector(".slider");
 const options = {
   type: {
@@ -15,14 +15,20 @@ const options = {
     fi2: 270
   }
 };
-anySlider.init(slider, options);
+imagineSlider.init(slider, options);
 ```
 To see more availible curve types (such as circle, lines, or even spiral) and their parameters follow appropriate section.
 After you run this code you will see:
 ![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/1.jpg)
 
 ## Use css to customize slider handle
-To style your handle you can just use ```.slider_handle``` class in css
+Firstly, use options object to set custom view:
+```js
+const options = {
+  sliderHandle: "custom",
+};
+```
+Then to style your handle you can use ```.slider_handle``` class in css
 ## Other ways to customize curve type
 To add your own curve you just need to add an 'arr' property to options object:
 ```js
@@ -43,7 +49,7 @@ const fi2 = 200 * Math.PI;
 const w = 1 / 50;
 const N = 100;
 
-const myArr = anySlider.createArrayH(fi1, fi2, 1).map(elem => {
+const myArr = imagineSlider.createArrayH(fi1, fi2, 1).map(elem => {
   let xAbs = elem;
   let yAbs = A * Math.sin(w * elem);
   return { x: xAbs, y: yAbs };
@@ -56,15 +62,15 @@ Or you can use ```createArray(x1, x2, N)``` to create array with the given numbe
 
 ### Some other ways to create a curve
 To create a curve you need you even may use methods:
-- anySlider.line(x1,y1,x2,y2) - creates a line whith 1 px step
-- anySlider.arc(r, fi1, fi2, xc, yc) - creates an arc. By default xc, yc - coordinates of an arc center is set to 0
+- imagineSlider.line(x1,y1,x2,y2) - creates a line whith 1 px step
+- imagineSlider.arc(r, fi1, fi2, xc, yc) - creates an arc. By default xc, yc - coordinates of an arc center is set to 0
 
 For exaple there is a triangle slider:
 ```js
 const arr = [
-  ...anySlider.line(20, 100, 200, 100),
-  ...anySlider.line(200, 100, 200, 300),
-  ...anySlider.line(200, 300, 20, 100)
+  ...imagineSlider.line(20, 100, 200, 100),
+  ...imagineSlider.line(200, 100, 200, 300),
+  ...imagineSlider.line(200, 300, 20, 100)
 ];
 ```
 ![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/4.jpg)
@@ -72,9 +78,9 @@ const arr = [
 And others...:
 ```js
 const arr = [
-  ...anySlider.line(20, 100, 200, 100),
-  ...anySlider.arc(100, 180, 0, 300, 100),
-  ...anySlider.line(400, 100, 500, 100),
+  ...imagineSlider.line(20, 100, 200, 100),
+  ...imagineSlider.arc(100, 180, 0, 300, 100),
+  ...imagineSlider.line(400, 100, 500, 100),
 ];
 ```
 ![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/3.jpg)
@@ -95,11 +101,11 @@ Available event types:
 - end (the end of slider moving)
 - click (click on a slider)
 ## Get and set values
-```anyslider.get()``` - if values property in options object is not added will return a value from 0 to 100. Where 0 
+```imagineSlider.get()``` - if values property in options object is not added will return a value from 0 to 100. Where 0 
 is the begining of a curve and 100 is its' end. Else return value is current slider value
-```anyslider.getPers()``` - returns a value from 0 to 100. Where 0 is the begining of a curve and 100 is its' end.
-```anyslider.set()``` - sets slider value to input value that has to be from 0 to 100 if values property in options object is not added or a value from values property interval
-```anyslider.setPers()``` - sets value in persentage from 0 to 100
+```imagineSlider.getPers()``` - returns a value from 0 to 100. Where 0 is the begining of a curve and 100 is its' end.
+```imagineSlider.set()``` - sets slider value to input value that has to be from 0 to 100 if values property in options object is not added or a value from values property interval
+```imagineSlider.setPers()``` - sets value in persentage from 0 to 100
 ## Some exples of usage options object
 Creating a round slider:
 ```js
@@ -188,7 +194,7 @@ Then you will see something like that:
 
 ![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/5.jpg)
 
-Now you can use a ```anySlider.get()``` and ```anySlider.set()``` methods and it will return/set values that you've determined. Remember, that if you do not use values property in your object theese method will return the persentage of passed curve. You can use more evident one: ```anySlider.getPers()``` and ```anySlider.setPers()``` to not been confused.
+Now you can use a ```imagineSlider.get()``` and ```imagineSlider.set()``` methods and it will return/set values that you've determined. Remember, that if you do not use values property in your object theese method will return the persentage of passed curve. You can use more evident one: ```imagineSlider.getPers()``` and ```imagineSlider.setPers()``` to not been confused.
 
 ## Rendering slider and customizing its look
 If you do not want to see the slider points you can use option object with the render property:
@@ -222,5 +228,5 @@ TODO:
 - []: Значения и штрихи на кривой
 - []: Toggle
 - []: Добавить функцию обновления параметров
-- []: ?Перенести инициализацию в конструктор?
+- []: Широкая кривая, закругление углов
 

@@ -1,13 +1,7 @@
-import { ImagineSlider } from "./src/js/app.js";
+import ImagineSlider from "./src/js/imagineSlider.js";
 
 window.anySlider = new ImagineSlider();
 const slider = document.querySelector(".slider");
-const input = document.querySelector(".input");
-const A = 60;
-const fi1 = 0;
-const fi2 = 200 * Math.PI;
-const w = 1 / 50;
-const N = 100;
 
 // const arr = anySlider.createArrayH(fi1, fi2, 1).map(elem => {
 //   let xAbs = elem;
