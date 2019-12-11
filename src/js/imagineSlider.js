@@ -12,13 +12,25 @@ class ImagineSlider {
   }
 
   render(elem, arr) {
+    this.isConnected = true;
     const defaultLook =
       "border-radius: 50%; background-color: #000000; width: 60px; height: 60px;";
+    const canvasDefaultCSS = "position: absolute; left: 0; top: 0;";
+    elem.style = "position: relative";
     elem.innerHTML = `
+      ${
+        this.isVisible
+          ? `<canvas id='canvas' style="${canvasDefaultCSS}"></canvas>`
+          : ""
+      }
+      ${
+        this.isConnected
+          ? `<canvas id='canvas_top' style="${canvasDefaultCSS}"></canvas>`
+          : ""
+      }
       <div class="slider_handle" style="position: absolute; ${
         this.customHandle ? "" : defaultLook
       }"></div>
-      ${this.isVisible ? "<canvas id='canvas'></canvas>" : ""}
     `;
     if (this.isVisible) {
       const canvas = document.querySelector("#canvas");
@@ -26,6 +38,7 @@ class ImagineSlider {
       canvas.width = this.canvasWidth;
       canvas.height = this.canvasHeight;
       const ctx = canvas.getContext("2d");
+      this.ctx = ctx;
 
       ctx.beginPath();
       ctx.fillStyle = this.lineColor;
@@ -61,6 +74,24 @@ class ImagineSlider {
         ctx.stroke();
       }
     }
+  }
+  renderTopLine() {
+    const activeArrayPart = this.arr.slice(0, this.currentElemIndex);
+
+    const canvasTop = document.querySelector("#canvas_top");
+    const dotRadius = this.lineWidth / 2;
+    canvasTop.width = this.canvasWidth;
+    canvasTop.height = this.canvasHeight;
+    const ctx = canvasTop.getContext("2d");
+
+    ctx.beginPath();
+    ctx.fillStyle = "black";
+    ctx.lineWidth = 0;
+    activeArrayPart.forEach(elem => {
+      ctx.moveTo(elem.x + dotRadius / 2, elem.y + dotRadius / 2);
+      ctx.arc(elem.x, elem.y, dotRadius, 0, 2 * Math.PI);
+    });
+    ctx.fill();
   }
 
   createArray(begin, end, N) {
@@ -505,6 +536,7 @@ class ImagineSlider {
       };
 
       let onMouseMove = moveEvt => {
+        this.renderTopLine();
         moveEvt.preventDefault();
 
         if (this.moveEvent) document.dispatchEvent(this.moveEvent);

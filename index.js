@@ -54,11 +54,11 @@ const options = {
   type: {
     curve: "arc",
     r: 250,
-    fi1: 0,
-    fi2: 360,
+    fi1: 90,
+    fi2: 270,
     closed: true
   },
-  // sliderHandle: "custom",
+  sliderHandle: "custom",
   behavior: {
     toggle: true
   },
@@ -66,9 +66,9 @@ const options = {
     from: 0,
     to: 300
   },
-  referenceValues: {
-    values: [0, 50, 100, 150, 200, 250]
-  },
+  // referenceValues: {
+  //   values: [0, 50, 100, 150, 200, 250]
+  // },
   render: {
     visible: true,
     color: "pink",
