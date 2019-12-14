@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/aleksgrin/anySlider#readme",
   "dependencies": {
+    "babel-core": "^6.26.3",
     "gulp": "^4.0.2",
     "require-dir": "^1.2.0"
   },
