@@ -66,6 +66,10 @@ const options = {
     from: 0,
     to: 300
   },
+  connection: {
+    connect: true,
+    color: ""
+  },
   // referenceValues: {
   //   values: [0, 50, 100, 150, 200, 250]
   // },

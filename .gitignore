@@ -44,3 +44,4 @@ build
 # Node.JS
 node_modules
 npm-debug.log
+yarn.lock

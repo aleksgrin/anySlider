@@ -21,6 +21,24 @@ To see more availible curve types (such as circle, lines, or even spiral) and th
 After you run this code you will see:
 ![Image alt](https://github.com/aleksgrin/anySlider/raw/master/images/1.jpg)
 
+## Conections
+To connect sliderHandle and the begining of the slider out can set params as following:
+```js
+const options = {
+  connection: {
+    connect: true, 
+  }
+};
+```
+To customize line color: 
+```js
+const options = {
+  connection: {
+    connect: true, 
+    color: 'blue'
+  }
+};
+```
 ## Use css to customize slider handle
 Firstly, use options object to set custom view:
 ```js
