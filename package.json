@@ -7,8 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --inline --hot",
     "build": "gulp build",
-    "buildProd": "set NODE_ENV=production && webpack",
-    "buildTest": "gulp build"
+    "distribute": "gulp distribute"
   },
   "repository": {
     "type": "git",

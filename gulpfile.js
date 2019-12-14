@@ -16,5 +16,9 @@ function build() {
     )
     .pipe(dest("build/"));
 }
+function distrubute() {
+  return src("build/**").pipe(dest("distribute/"));
+}
 
 exports.build = build;
+exports.distrubute = distrubute;
